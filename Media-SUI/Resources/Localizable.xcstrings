@@ -18,7 +18,20 @@
       }
     },
     "Delete" : {
-
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удалить"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Видалити"
+          }
+        }
+      }
     },
     "Music player" : {
       "localizations" : {
@@ -83,9 +96,6 @@
           }
         }
       }
-    },
-    "Recordings" : {
-
     },
     "Search" : {
       "localizations" : {

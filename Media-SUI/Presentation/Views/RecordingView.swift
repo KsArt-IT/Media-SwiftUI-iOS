@@ -21,6 +21,8 @@ struct RecordingView: View {
         .padding(.vertical)
         .background((isPlaying ? Color.blue : Color.black).opacity(0.7))
         .cornerRadius(Constants.radius)
+        .listRowInsets(EdgeInsets(top: 2, leading: 0, bottom: 2, trailing: 0))
+        .listRowSeparator(.hidden)
     }
 }
 

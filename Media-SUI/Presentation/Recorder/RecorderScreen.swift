@@ -14,36 +14,27 @@ struct RecorderScreen: View {
         VStack {
             TitleTextView("Audio recorder")
             
-            Text("Recordings")
-                .font(.title2)
-                .fontWeight(.semibold)
-            //                .foregroundStyle(Color.white)
-                .padding(.vertical, Constants.small)
-            
-            ScrollView(.vertical, showsIndicators: false) {
-                LazyVStack(spacing: Constants.small) {
-                    ForEach(viewModel.recordings) { recording in
-                        RecordingView(
-                            recording: recording,
-                            isPlaying: viewModel.isPlaying(recording.url)
-                        )
-                        .swipeActions(edge: .trailing) {
-                            Button {
-                                viewModel.delete(recording.url)
-                            } label: {
-                                Label("Delete", systemImage: "trash")
-                            }
-                            .tint(.red)
+            List(viewModel.recordings) { recording in
+                RecordingView(
+                    recording: recording,
+                    isPlaying: viewModel.isPlaying(recording.url)
+                )
+                .swipeActions(edge: .trailing) {
+                    Button {
+                        withAnimation {
+                            viewModel.delete(recording.url)
                         }
-                        .onTapGesture {
-                            viewModel.playOrStop(recording.url)
-                        }
+                    } label: {
+                        Label("Delete", systemImage: "trash")
                     }
+                    .tint(.red)
+                }
+                .onTapGesture {
+                    viewModel.playOrStop(recording.url)
                 }
             }
-            .frame(maxHeight: 300)
-            
-            Spacer()
+            .listStyle(.plain)
+            .scrollIndicators(.hidden)
             
             VStack {
                 if viewModel.isRecording {
@@ -52,14 +43,17 @@ struct RecorderScreen: View {
                     EmptyView()
                 }
             }
-            .frame(height: 150)
-            .padding(.vertical, Constants.small)
+            .frame(maxWidth: .infinity)
+            .frame(height: Constants.waveformHeight)
             .border(.green)
+            .padding(.vertical, Constants.small)
             
             ButtonRecordingView(isRecording: viewModel.isRecording, isDisabled: viewModel.isRecordingButtonDisabled) {
-                viewModel.startOrStopRecording()
+                withAnimation {
+                    viewModel.startOrStopRecording()
+                }
             }
-            
+            .padding(.bottom, Constants.small)
         }
         .frame(maxHeight: .infinity, alignment: .top)
         .padding()

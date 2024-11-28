@@ -250,6 +250,7 @@ final class RecorderViewModel: NSObject, ObservableObject {
         return player
     }
     
+    // MARK: - Operation
     public func delete(_ url: URL) {
         do {
             try FileManager.default.removeItem(at: url)
