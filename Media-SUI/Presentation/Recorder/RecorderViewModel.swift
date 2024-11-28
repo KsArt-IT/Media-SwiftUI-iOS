@@ -22,6 +22,10 @@ final class RecorderViewModel: NSObject, ObservableObject {
     private var currentPlaying: URL?
     private var task: Task<(), Never>?
     
+    @Published var isRenameVisible = false
+    @Published var name = ""
+    private var recording: Recording?
+    
     public func isPlaying(_ url: URL) -> Bool {
         currentPlaying != nil && currentPlaying == url
     }
@@ -145,7 +149,7 @@ final class RecorderViewModel: NSObject, ObservableObject {
     private func getRecorder() async throws -> AVAudioRecorder {
         // Запрос разрешения на микрофон
         guard await AVAudioApplication.requestRecordPermission() else { throw AudioRecorderError.permissionDenied }
-
+        
         let recorder = try AVAudioRecorder(
             url: getPathRecordingNext(),
             settings: getSettingsRecording()
@@ -257,6 +261,48 @@ final class RecorderViewModel: NSObject, ObservableObject {
             recordings.removeAll(where: { $0.url == url })
         } catch {
             print("Error: delete \(error.localizedDescription)")
+        }
+    }
+    
+    public func showRename(_ recording: Recording) {
+        isRenameVisible = false
+        self.recording = recording
+        self.name = recording.name
+        isRenameVisible = true
+    }
+    
+    public func rename() {
+        guard let recording, !name.isEmpty, recording.name != name else { return }
+        
+        Task { [weak self] in
+            await self?.renameRecording(recording, to: self?.name)
+        }
+    }
+    
+    private func renameRecording(_ recording: Recording, to newName: String?) async {
+        guard let newName else { return }
+        
+        if let newUrl = renameFile(at: recording.url, to: newName), let index = recordings.firstIndex(of: recording) {
+           await MainActor.run { [weak self] in
+               self?.recordings[index] = Recording(
+                    id: recording.id,
+                    name: newName,
+                    url: newUrl,
+                    date: recording.date
+                )
+            }
+        }
+    }
+    
+    private func renameFile(at url: URL, to newName: String) -> URL? {
+        let newURL = url.deletingLastPathComponent().appendingPathComponent(newName)
+        
+        do {
+            try FileManager.default.moveItem(at: url, to: newURL)
+            return newURL
+        } catch {
+            print("Error renaming file: \(error.localizedDescription)")
+            return nil
         }
     }
 }

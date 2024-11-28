@@ -29,6 +29,14 @@ struct RecorderScreen: View {
                     }
                     .tint(.red)
                 }
+                .swipeActions(edge: .leading) {
+                    Button {
+                        viewModel.showRename(recording)
+                    } label: {
+                        Label("Rename", systemImage: "rectangle.and.pencil.and.ellipsis")
+                    }
+                    .tint(.blue)
+                }
                 .onTapGesture {
                     viewModel.playOrStop(recording.url)
                 }
@@ -57,6 +65,10 @@ struct RecorderScreen: View {
         }
         .frame(maxHeight: .infinity, alignment: .top)
         .padding()
+        .alertRename(isPresented: $viewModel.isRenameVisible, name: $viewModel.name) {
+            viewModel.rename()
+        }
+
         .onAppear {
             viewModel.fetchRecordings()
         }
