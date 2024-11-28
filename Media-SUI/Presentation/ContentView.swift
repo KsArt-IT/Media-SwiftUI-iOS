@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var selectedTab: Tab = .player
+    @State private var selectedTab: Tab = .recorder
     private enum Tab: LocalizedStringKey, CaseIterable {
         case player = "Player"
         case recorder = "Record"

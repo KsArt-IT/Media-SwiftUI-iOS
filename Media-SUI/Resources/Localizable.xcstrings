@@ -17,6 +17,9 @@
         }
       }
     },
+    "Delete" : {
+
+    },
     "Music player" : {
       "localizations" : {
         "ru" : {
@@ -80,6 +83,9 @@
           }
         }
       }
+    },
+    "Recordings" : {
+
     },
     "Search" : {
       "localizations" : {

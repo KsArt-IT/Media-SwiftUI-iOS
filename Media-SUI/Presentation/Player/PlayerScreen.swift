@@ -18,7 +18,5 @@ struct PlayerScreen: View {
 }
 
 #Preview {
-    NavigationStack {
-        PlayerScreen()
-    }
+    PlayerScreen()
 }
