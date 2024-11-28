@@ -14,8 +14,10 @@ struct ButtonRecordingView: View {
     
     var body: some View {
         Button {
-            let impactMed = UIImpactFeedbackGenerator(style: .medium)
-            impactMed.impactOccurred()
+            // предоставляет тактильный отклик с разной интенсивностью.
+            let generator = UIImpactFeedbackGenerator(style: .soft)
+            generator.prepare()
+            generator.impactOccurred()
             
             onClick()
         } label: {
