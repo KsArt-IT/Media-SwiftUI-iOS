@@ -8,8 +8,10 @@
 import SwiftUI
 
 struct RecordingView: View {
+    @State private var isPlaying: Bool = false
+    
     let recording: Recording
-    let isPlaying: Bool
+    @Binding var playing: URL?
     
     var body: some View {
         VStack {
@@ -23,6 +25,9 @@ struct RecordingView: View {
         .cornerRadius(Constants.radius)
         .listRowInsets(EdgeInsets(top: 2, leading: 0, bottom: 2, trailing: 0))
         .listRowSeparator(.hidden)
+        .task(id: playing) {
+            isPlaying = recording.url == playing
+        }
     }
 }
 
@@ -34,6 +39,6 @@ struct RecordingView: View {
             url: URL.applicationDirectory,
             date: Date.now
         ),
-        isPlaying: false
+        playing: .constant(nil)
     )
 }

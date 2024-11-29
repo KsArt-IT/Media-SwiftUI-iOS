@@ -17,7 +17,7 @@ struct RecorderScreen: View {
             List(viewModel.recordings) { recording in
                 RecordingView(
                     recording: recording,
-                    isPlaying: viewModel.isPlaying(recording.url)
+                    playing: $viewModel.currentPlaying
                 )
                 .swipeActions(edge: .trailing) {
                     Button {

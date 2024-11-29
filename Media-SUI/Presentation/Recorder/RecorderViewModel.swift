@@ -19,18 +19,15 @@ final class RecorderViewModel: NSObject, ObservableObject {
     
     
     private var audioPlayer: AVAudioPlayer?
-    private var currentPlaying: URL?
+    @Published var currentPlaying: URL?
     private var task: Task<(), Never>?
+    private var notIndex = 1_000_000
     
     @Published var isRenameVisible = false
     @Published var name = ""
     private var recording: Recording?
     
-    public func isPlaying(_ url: URL) -> Bool {
-        currentPlaying != nil && currentPlaying == url
-    }
-    
-    // MARK: - Fetch
+    // MARK: - Fetch Recordings
     public func fetchRecordings() {
         guard task == nil else { return }
         
@@ -59,7 +56,7 @@ final class RecorderViewModel: NSObject, ObservableObject {
                         let creationDate = attributes?[.creationDate] as? Date ?? Date.now
                         let fileName = url.lastPathComponent
                         let components = fileName.split(separator: "_")
-                        let index = components.count > 1 ? Int(components[1]) ?? 0 : 0
+                        let index = components.count > 1 ? Int(components[1]) ?? getIndex() : getIndex()
                         
                         return Recording(
                             id: index,
@@ -77,6 +74,11 @@ final class RecorderViewModel: NSObject, ObservableObject {
             print("RecorderViewModel:\(#function): fetch error = \(error.localizedDescription)")
             return []
         }
+    }
+    
+    private func getIndex() -> Int {
+        notIndex += 1
+        return notIndex
     }
     
     // Путь для сохранения аудиофайлов
