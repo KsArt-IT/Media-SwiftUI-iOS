@@ -8,36 +8,44 @@
 import SwiftUI
 
 struct ButtonRecordingView: View {
-    let isRecording: Bool
-    let isDisabled: Bool
+    @Binding var isRecording: Bool
+    @Binding var isDisabled: Bool
     let onClick: () -> Void
     
     var body: some View {
-        Button {
-            // предоставляет тактильный отклик с разной интенсивностью.
-            let generator = UIImpactFeedbackGenerator(style: .soft)
-            generator.prepare()
-            generator.impactOccurred()
-            
+        Button(action: {
+            isDisabled = false
+            provideHapticFeedback()
             onClick()
-        } label: {
+        }) {
             Circle()
                 .fill(isRecording ? .red : .green)
-                .frame(width: 120, height: 120)
                 .overlay {
                     Image(systemName: isRecording ? "stop.fill" : "mic.fill")
-                        .imageScale(.large)
+                        .font(.largeTitle)
                         .foregroundStyle(Color.white)
                 }
-                .shadow(color: .white, radius: 15, x: 0, y: 0)
-                .scaleEffect(isRecording ? 1.1 : 1.0)
+                .shadow(
+                    color: isRecording ? .red.opacity(0.75) : .green.opacity(0.75),
+                    radius: 15,
+                    x: 0,
+                    y: 0
+                )
+                .scaleEffect(isRecording ? 1 : 0.8)
                 .animation(.spring, value: isRecording)
         }
         .disabled(isDisabled)
-        .opacity(isDisabled ? 0.3 : 1)
+        .opacity(isDisabled ? 0.5 : 1)
+        .accessibilityLabel(isRecording ? "Stop Recording" : "Start Recording")
+        .accessibilityHint("Double-tap to toggle recording")
+    }
+    
+    private func provideHapticFeedback() {
+        let generator = UINotificationFeedbackGenerator()
+        generator.prepare()
+        generator.notificationOccurred(.success)
     }
 }
-
 #Preview {
-    ButtonRecordingView(isRecording: true, isDisabled: false, onClick: {})
+    ButtonRecordingView(isRecording: .constant(true), isDisabled: .constant(false), onClick: {})
 }

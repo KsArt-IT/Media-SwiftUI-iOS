@@ -22,6 +22,7 @@ enum Constants {
 
     static let recordingDir = "RecordingMusicCenter"
     static let recordingExt = "m4a"
+    static let recordingButton: CGFloat = 120
     
     static let waveformHeight: CGFloat = 100
     static let waveformNormalize: Float = 50

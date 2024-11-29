@@ -49,6 +49,22 @@
         }
       }
     },
+    "Double-tap to toggle recording" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дважды нажмите, чтобы включить запись."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Двічі торкніться, щоб увімкнути запис"
+          }
+        }
+      }
+    },
     "Edit Name" : {
       "localizations" : {
         "ru" : {
@@ -187,6 +203,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Пошук"
+          }
+        }
+      }
+    },
+    "Start Recording" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Начать запись"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Почати запис"
+          }
+        }
+      }
+    },
+    "Stop Recording" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Остановить запись"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Зупинити запис"
           }
         }
       }

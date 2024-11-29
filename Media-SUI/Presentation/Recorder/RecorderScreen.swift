@@ -56,11 +56,13 @@ struct RecorderScreen: View {
             .border(.green)
             .padding(.vertical, Constants.small)
             
-            ButtonRecordingView(isRecording: viewModel.isRecording, isDisabled: viewModel.isRecordingButtonDisabled) {
-                withAnimation {
-                    viewModel.startOrStopRecording()
-                }
+            ButtonRecordingView(
+                isRecording: $viewModel.isRecording,
+                isDisabled: $viewModel.isRecordingButtonDisabled
+            ) {
+                viewModel.startOrStopRecording()
             }
+            .frame(width: Constants.recordingButton, height: Constants.recordingButton)
             .padding(.bottom, Constants.small)
         }
         .frame(maxHeight: .infinity, alignment: .top)
