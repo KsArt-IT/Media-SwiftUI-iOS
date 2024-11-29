@@ -15,7 +15,7 @@ struct RecordingView: View {
     
     var body: some View {
         VStack {
-            Text(recording.name)
+            Text("№ \(recording.n) \(recording.name)")
             Text(recording.date.toString())
                 .font(.caption)
         }
@@ -34,7 +34,7 @@ struct RecordingView: View {
 #Preview {
     RecordingView(
         recording: Recording(
-            id: 1,
+            n: 0,
             name: "Recording",
             url: URL.applicationDirectory,
             date: Date.now

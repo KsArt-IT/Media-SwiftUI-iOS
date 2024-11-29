@@ -21,7 +21,7 @@ final class RecorderViewModel: NSObject, ObservableObject {
     private var audioPlayer: AVAudioPlayer?
     @Published var currentPlaying: URL?
     private var task: Task<(), Never>?
-    private var notIndex = 1_000_000
+    private var maxIndex = 0
     
     @Published var isRenameVisible = false
     @Published var name = ""
@@ -56,10 +56,13 @@ final class RecorderViewModel: NSObject, ObservableObject {
                         let creationDate = attributes?[.creationDate] as? Date ?? Date.now
                         let fileName = url.lastPathComponent
                         let components = fileName.split(separator: "_")
-                        let index = components.count > 1 ? Int(components[1]) ?? getIndex() : getIndex()
+                        let index = components.count > 1 ? Int(components[1]) ?? 0 : 0
+                        if index > maxIndex {
+                            maxIndex = index
+                        }
                         
                         return Recording(
-                            id: index,
+                            n: index,
                             name: url.lastPathComponent,
                             url: url,
                             date: creationDate
@@ -68,7 +71,7 @@ final class RecorderViewModel: NSObject, ObservableObject {
                         return nil
                     }
                 }
-                .sorted(by: { $0.id < $1.id })
+                .sorted(by: { $0.date < $1.date })
             return list
         } catch {
             print("RecorderViewModel:\(#function): fetch error = \(error.localizedDescription)")
@@ -76,17 +79,12 @@ final class RecorderViewModel: NSObject, ObservableObject {
         }
     }
     
-    private func getIndex() -> Int {
-        notIndex += 1
-        return notIndex
-    }
-    
     // Путь для сохранения аудиофайлов
     private func getRecordingsDir() throws -> URL {
         let fileManager = FileManager.default
         let directory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
             .appendingPathComponent(Constants.recordingDir, conformingTo: .directory)
-//        print("RecorderViewModel:\(#function): path = \(directory.absoluteString)")
+        //        print("RecorderViewModel:\(#function): path = \(directory.absoluteString)")
         
         if !fileManager.fileExists(atPath: directory.path) {
             try fileManager.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
@@ -167,14 +165,13 @@ final class RecorderViewModel: NSObject, ObservableObject {
     }
     
     private func getPathRecordingNext() throws -> URL {
-        let index = String(format: "%03d", recordings.endIndex + 1)
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyyMMdd_HHmmss"
-        let date = formatter.string(from: Date.now)
+        maxIndex += 1
+        let index = String(format: "%03d", maxIndex)
+        let date = Date.now.toFileName()
         let fileName = "Recording_\(index)_\(date).\(Constants.recordingExt)"
         
         let path = try getRecordingsDir().appendingPathComponent(fileName, conformingTo: .fileURL)
-//        print("RecorderViewModel:\(#function): path = \(path.absoluteString)")
+        //        print("RecorderViewModel:\(#function): path = \(path.absoluteString)")
         return path
     }
     
@@ -295,9 +292,9 @@ final class RecorderViewModel: NSObject, ObservableObject {
         guard let newName else { return }
         
         if let newUrl = renameFile(at: recording.url, to: newName), let index = recordings.firstIndex(of: recording) {
-           await MainActor.run { [weak self] in
-               self?.recordings[index] = Recording(
-                    id: recording.id,
+            await MainActor.run { [weak self] in
+                self?.recordings[index] = Recording(
+                    n: recording.n,
                     name: newName,
                     url: newUrl,
                     date: recording.date

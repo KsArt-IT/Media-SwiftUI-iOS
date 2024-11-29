@@ -13,7 +13,13 @@ enum Constants {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String ??
         "Music center"
     }()
-    
+
+    static let dateFormatterForFileName: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyyMMdd_HHmmss"
+        return formatter
+    }()
+
     static let recordingDir = "RecordingMusicCenter"
     static let recordingExt = "m4a"
     

@@ -8,8 +8,11 @@
 import Foundation
 
 struct Recording: Identifiable, Hashable {
-    let id: Int
+    let n: Int
     let name: String
     let url: URL
     let date: Date
+    var id: URL {
+        url
+    }
 }
