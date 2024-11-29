@@ -121,10 +121,6 @@ final class RecorderViewModel: NSObject, ObservableObject {
     private func startRecording() async {
         print("RecorderViewModel:\(#function)")
         do {
-            let session = AVAudioSession.sharedInstance()
-            try session.setCategory(.playAndRecord, mode: .default, options: .defaultToSpeaker)
-            try session.setActive(true)
-            
             audioRecorder = try await getRecorder()
             audioRecorder?.record() // start
         } catch {
@@ -154,6 +150,10 @@ final class RecorderViewModel: NSObject, ObservableObject {
         // Запрос разрешения на микрофон
         guard await AVAudioApplication.requestRecordPermission() else { throw AudioRecorderError.permissionDenied }
         
+        let session = AVAudioSession.sharedInstance()
+        try session.setCategory(.playAndRecord, mode: .default, options: .defaultToSpeaker)
+        try session.setActive(true)
+
         let recorder = try AVAudioRecorder(
             url: getPathRecordingNext(),
             settings: getSettingsRecording()
