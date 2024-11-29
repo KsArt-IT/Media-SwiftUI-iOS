@@ -24,7 +24,7 @@ enum Constants {
     static let recordingExt = "m4a"
     static let recordingButton: CGFloat = 120
     
-    static let waveformHeight: CGFloat = 100
+    static let waveformHeight: CGFloat = 50
     static let waveformNormalize: Float = 50
     static let waveformInterval = 0.05 // 24 раза в секунду
     
