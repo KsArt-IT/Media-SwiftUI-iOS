@@ -10,7 +10,7 @@ import AVFoundation
 
 final class RecorderViewModel: NSObject, ObservableObject {
     @Published var recordings: [Recording] = []
-    @Published var audioLevels: [CGFloat] = Array(repeating: 20, count: 30)
+    @Published var audioLevels: [CGFloat] = Array(repeating: 0.0, count: 30)
     
     private var audioRecorder: AVAudioRecorder?
     private var meterTimer: Timer?
@@ -86,7 +86,7 @@ final class RecorderViewModel: NSObject, ObservableObject {
         let fileManager = FileManager.default
         let directory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
             .appendingPathComponent(Constants.recordingDir, conformingTo: .directory)
-        print("RecorderViewModel:\(#function): path = \(directory.absoluteString)")
+//        print("RecorderViewModel:\(#function): path = \(directory.absoluteString)")
         
         if !fileManager.fileExists(atPath: directory.path) {
             try fileManager.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
@@ -129,7 +129,6 @@ final class RecorderViewModel: NSObject, ObservableObject {
             
             audioRecorder = try await getRecorder()
             audioRecorder?.record() // start
-            startMeterTimer()
         } catch {
             print("Error: \(error.localizedDescription)")
         }
@@ -138,13 +137,18 @@ final class RecorderViewModel: NSObject, ObservableObject {
     private func stopRecording() async {
         audioRecorder?.stop()
         audioRecorder = nil
-        stopMeterTimer()
     }
     
     @MainActor
     private func changeRecordingState() async {
         isRecording = audioRecorder != nil
         isRecordingButtonDisabled = false
+        if isRecording {
+            // запускать таймер на main потоке
+            startMeterTimer()
+        } else {
+            stopMeterTimer()
+        }
     }
     
     // MARK: - Recorder
@@ -158,6 +162,7 @@ final class RecorderViewModel: NSObject, ObservableObject {
         )
         recorder.delegate = self
         recorder.isMeteringEnabled = true
+        recorder.prepareToRecord()
         return recorder
     }
     
@@ -169,7 +174,7 @@ final class RecorderViewModel: NSObject, ObservableObject {
         let fileName = "Recording_\(index)_\(date).\(Constants.recordingExt)"
         
         let path = try getRecordingsDir().appendingPathComponent(fileName, conformingTo: .fileURL)
-        print("RecorderViewModel:\(#function): path = \(path.absoluteString)")
+//        print("RecorderViewModel:\(#function): path = \(path.absoluteString)")
         return path
     }
     
@@ -183,8 +188,13 @@ final class RecorderViewModel: NSObject, ObservableObject {
     }
     
     // MARK: - Timer
+    @MainActor
     private func startMeterTimer() {
-        meterTimer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { [weak self] _ in
+        // запускать таймер на main потоке
+        meterTimer = Timer.scheduledTimer(
+            withTimeInterval: Constants.waveformInterval,
+            repeats: true
+        ) { [weak self] _ in
             self?.updateAudioLevels()
         }
     }
@@ -201,23 +211,23 @@ final class RecorderViewModel: NSObject, ObservableObject {
             recorder.updateMeters()
             let averagePower = recorder.averagePower(forChannel: 0)
             if let normalizedLevel = self?.normalizedPowerLevel(from: averagePower) {
-                await self?.normalized(normalizedLevel)
+                await self?.addAudioLevels(normalizedLevel)
             }
         }
     }
     
     private func normalizedPowerLevel(from decibels: Float) -> CGFloat {
-        if decibels < -80 {
+        if decibels < -Constants.waveformNormalize {
             0.0
         } else if decibels >= 0 {
             1.0
         } else {
-            CGFloat((decibels + 80) / 80)
+            CGFloat((decibels + Constants.waveformNormalize) / Constants.waveformNormalize)
         }
     }
     
     @MainActor
-    private func normalized(_ level: CGFloat) {
+    private func addAudioLevels(_ level: CGFloat) {
         audioLevels.append(level)
         if audioLevels.count > 30 {
             audioLevels.removeFirst()

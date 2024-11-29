@@ -11,7 +11,11 @@ struct AudioWaveformView: View {
     let audioLevels: [CGFloat]
     
     var body: some View {
-        EmptyView()
+        HStack(spacing: 2) {
+            ForEach(audioLevels, id: \.self) { level in
+                AudioBarView(level: level)
+            }
+        }
     }
 }
 
