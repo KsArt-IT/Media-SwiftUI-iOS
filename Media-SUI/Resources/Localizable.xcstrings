@@ -33,6 +33,9 @@
         }
       }
     },
+    "Decoding failed with error" : {
+
+    },
     "Delete" : {
       "localizations" : {
         "ru" : {
@@ -128,6 +131,9 @@
           }
         }
       }
+    },
+    "Network error occurred" : {
+
     },
     "№ %lld %@" : {
       "localizations" : {
@@ -238,6 +244,12 @@
           }
         }
       }
+    },
+    "The request is invalid." : {
+
+    },
+    "The response is invalid, code" : {
+
     }
   },
   "version" : "1.0"
