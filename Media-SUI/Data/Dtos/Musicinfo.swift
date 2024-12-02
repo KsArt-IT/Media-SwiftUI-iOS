@@ -6,7 +6,10 @@
 //
 
 struct Musicinfo: Decodable {
-    let vocalinstrumental, lang, gender, acousticelectric: String
+    let vocalinstrumental: String
+    let lang: String
+    let gender: String
+    let acousticelectric: String
     let speed: String
     let tags: Tags
 }

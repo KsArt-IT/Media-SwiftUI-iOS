@@ -10,6 +10,7 @@ import Foundation
 // JamendoApi
 enum MusicEndpoint {
     case tracks(Int)
+    case image(String)
 }
 
 extension MusicEndpoint {
