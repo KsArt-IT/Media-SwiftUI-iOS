@@ -32,20 +32,25 @@ extension MusicEndpoint {
                     Self.offsetParam: "\(offset * Self.limit)"
                 ]
             )
+        case .image(let url):
+            createUrl(url: url)
         }
     }
     
-    private func createUrl(url: String = Self.baseUrl, path: String, query params: [String: String] = [:]) -> URL? {
+    private func createUrl(url: String = Self.baseUrl, path: String? = nil, query params: [String: String]? = nil) -> URL? {
         guard var components = URLComponents(string: url) else { return nil }
         
-        components.path += path
+        if let path {
+            components.path += path
+        }
         
-        var queryItems = [createQueryItem(key: Self.clientIdParam, value: Self.clientId)]
-        queryItems += [createQueryItem(key: Self.formatParam, value: Self.format)]
-        components.queryItems = queryItems + params.map(createQueryItem)
+        components.queryItems = [createQueryItem(key: Self.clientIdParam, value: Self.clientId),
+        createQueryItem(key: Self.formatParam, value: Self.format)]
+        if let params {
+            components.queryItems = components.queryItems! + params.map(createQueryItem)
+        }
         
         return components.url
-        
     }
     
     private func createQueryItem(key: String, value: String) -> URLQueryItem {
