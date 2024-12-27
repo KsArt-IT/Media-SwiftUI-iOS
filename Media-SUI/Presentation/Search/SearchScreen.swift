@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct SearchScreen: View {
+    @StateObject var viewModel: SearchScreenViewModel
+    
     var body: some View {
         VStack {
             Text("Music search")
@@ -18,5 +20,5 @@ struct SearchScreen: View {
 }
 
 #Preview {
-    SearchScreen()
+//    SearchScreen(viewModel: SearchScreenViewModel())
 }

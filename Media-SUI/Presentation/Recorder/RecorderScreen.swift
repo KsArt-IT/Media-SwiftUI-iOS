@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct RecorderScreen: View {
-    @StateObject private var viewModel = RecorderViewModel()
+    @StateObject var viewModel: RecorderViewModel
     
     var body: some View {
         VStack {
@@ -81,5 +81,5 @@ struct RecorderScreen: View {
 }
 
 #Preview {
-    RecorderScreen()
+    RecorderScreen(viewModel: RecorderViewModel())
 }

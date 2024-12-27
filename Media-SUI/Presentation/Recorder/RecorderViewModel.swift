@@ -8,6 +8,7 @@
 import Foundation
 import AVFoundation
 
+// NSObject for PlayerDelegate
 final class RecorderViewModel: NSObject, ObservableObject {
     @Published var recordings: [Recording] = []
     @Published var audioLevels: [CGFloat] = Array(repeating: 0.0, count: 30)

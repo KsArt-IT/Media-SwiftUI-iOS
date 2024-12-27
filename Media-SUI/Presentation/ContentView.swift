@@ -8,15 +8,16 @@
 import SwiftUI
 
 struct ContentView: View {
+    @Environment(\.diManager) private var di
     @State private var selectedTab: Tab = .recorder
     
     var body: some View {
         TabView(selection: $selectedTab) {
             PlayerScreen()
                 .tabMenu(Tab.player, icon: "play.square")
-            RecorderScreen()
+            RecorderScreen(viewModel: di.resolve())
                 .tabMenu(Tab.recorder, icon: "mic.square")
-            SearchScreen()
+            SearchScreen(viewModel: di.resolve())
                 .tabMenu(Tab.search, icon: "mail.and.text.magnifyingglass")
         }
     }
