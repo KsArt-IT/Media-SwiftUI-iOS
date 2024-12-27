@@ -19,6 +19,7 @@ extension MusicEndpoint {
         
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
+        request.timeoutInterval = 240
         
         return request
     }
@@ -29,11 +30,12 @@ extension MusicEndpoint {
             createUrl(
                 path: "/tracks",
                 query: [
-                    Self.offsetParam: "\(offset * Self.limit)"
+                    Self.offsetParam: "\(offset * Self.limit)",
+                    Self.limitParam: "\(Self.limit)"
                 ]
             )
         case .image(let url):
-            createUrl(url: url)
+            URL(string: url)
         }
     }
     
@@ -44,10 +46,12 @@ extension MusicEndpoint {
             components.path += path
         }
         
-        components.queryItems = [createQueryItem(key: Self.clientIdParam, value: Self.clientId),
+        let queryItems = [createQueryItem(key: Self.clientIdParam, value: Self.clientId),
         createQueryItem(key: Self.formatParam, value: Self.format)]
-        if let params {
-            components.queryItems = components.queryItems! + params.map(createQueryItem)
+        components.queryItems = if let params {
+            queryItems + params.map(createQueryItem)
+        } else {
+            queryItems
         }
         
         return components.url
@@ -57,6 +61,7 @@ extension MusicEndpoint {
         URLQueryItem(name: key, value: value)
     }
     
+    // https://api.jamendo.com/v3.0/tracks?client_id=c98dd4d5&format=json&offset=0&limit=10
     private static let baseUrl = "https://api.jamendo.com/v3.0"
     // Query params
     private static let clientIdParam = "client_id"

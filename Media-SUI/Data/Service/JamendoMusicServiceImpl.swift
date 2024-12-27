@@ -8,7 +8,14 @@
 import Foundation
 
 final class JamendoMusicServiceImpl: MusicService {
-    private lazy var session = URLSession.shared
+    private lazy var session: URLSession = {
+        let configuration = URLSessionConfiguration.default
+        
+        configuration.timeoutIntervalForRequest = 240
+        configuration.timeoutIntervalForResource = 240
+        
+        return URLSession(configuration: configuration)
+    }()
     private lazy var decoder: JSONDecoder = {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
@@ -19,7 +26,7 @@ final class JamendoMusicServiceImpl: MusicService {
     
     func fetchData<T>(endpoint: MusicEndpoint) async -> Result<T, any Error> where T : Decodable {
         guard let request = endpoint.request else { return .failure(NetworkError.invalidRequest) }
-        print("NewsServiceImpl: \(#function) url: \(request.url?.absoluteString ?? "")")
+        print("JamendoMusicServiceImpl: \(#function) url: \(request.url?.absoluteString ?? "")")
         
         do {
             let data = try await fetchData(for: request)
@@ -28,7 +35,6 @@ final class JamendoMusicServiceImpl: MusicService {
             } else {
                 try decode(data)
             }
-            
             return .success(result)
         } catch let error as MusicError {
             return .failure(error)
@@ -37,14 +43,14 @@ final class JamendoMusicServiceImpl: MusicService {
         } catch let error as URLError where error.code == .cancelled {
             return .failure(MusicError.cancelled)
         } catch {
-            print("NewsServiceImpl: \(#function) error: \(error.localizedDescription)")
+//            print("JamendoMusicServiceImpl: \(#function) error: \(error.localizedDescription)")
             return .failure(MusicError.networkError(error.localizedDescription))
         }
     }
     
     // MARK: - URLRequest
     private func fetchData(for reques: URLRequest) async throws -> Data {
-        print("JamendoMusicServiceImpl: \(#function)")
+//        print("JamendoMusicServiceImpl: \(#function)")
         let (data, response) = try await session.data(for: reques)
         if let code = getErrorCode(for: response) {
             try getErrorMsg(code, from: data)
@@ -54,7 +60,7 @@ final class JamendoMusicServiceImpl: MusicService {
     
     // MARK: - Error handling
     private func getErrorCode(for response: URLResponse) -> Int? {
-        print("NewsServiceImpl: \(#function)")
+//        print("JamendoMusicServiceImpl: \(#function)")
         guard let httpResponse = response as? HTTPURLResponse else { return -1 }
         
         return 200...299 ~= httpResponse.statusCode ? nil : httpResponse.statusCode
@@ -66,12 +72,20 @@ final class JamendoMusicServiceImpl: MusicService {
         } else {
             ""
         }
-        print("NewsServiceImpl: \(#function) error: \(message)")
+//        print("JamendoMusicServiceImpl: \(#function) error: \(message)")
         throw NetworkError.invalidResponse(code: code, message: message)
     }
     
     // MARK: - Decode data
     private func decode<T>(_ data: Data) throws -> T where T: Decodable {
-        try decoder.decode(T.self, from: data)
+//        print("JamendoMusicServiceImpl: \(#function) \(T.self)")
+        do {
+            let result = try decoder.decode(T.self, from: data)
+//            print("JamendoMusicServiceImpl: \(#function) result \(result)")
+            return result
+        } catch {
+//            print("JamendoMusicServiceImpl: error: \(error)")
+            throw NetworkError.decodingError(error.localizedDescription)
+        }
     }
 }

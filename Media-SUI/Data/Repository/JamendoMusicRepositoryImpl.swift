@@ -18,7 +18,9 @@ final class JamendoMusicRepositoryImpl: MusicRepository {
         let result: Result<TracksResponse, Error> = await service.fetchData(endpoint: .tracks(page))
         switch result {
         case .success(let response):
+//            print("JamendoMusicRepositoryImpl: success")
             guard !response.results.isEmpty else {
+//                print("JamendoMusicRepositoryImpl: error")
                 return .failure(
                     NetworkError.invalidResponse(code: response.headers.code, message: response.headers.errorMessage)
                 )
@@ -32,8 +34,10 @@ final class JamendoMusicRepositoryImpl: MusicRepository {
                     tracks.append(track.mapToDomain())
                 }
             }
+//            print("JamendoMusicRepositoryImpl: success")
             return .success(tracks)
         case .failure(let error):
+//            print("JamendoMusicRepositoryImpl: error: \(error.localizedDescription)")
             return .failure(error)
         }
     }

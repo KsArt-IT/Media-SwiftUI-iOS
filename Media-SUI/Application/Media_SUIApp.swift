@@ -14,4 +14,7 @@ struct Media_SUIApp: App {
             ContentView()
         }
     }
+    init() {
+        print("Use api key: '\(MusicEndpoint.clientId)'")
+    }
 }

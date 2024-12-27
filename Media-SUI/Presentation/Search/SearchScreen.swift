@@ -12,9 +12,11 @@ struct SearchScreen: View {
     
     var body: some View {
         VStack {
-            Text("Music search")
-                .font(.title)
-            Spacer()
+            TitleTextView("Music search")
+            
+            List(viewModel.tracks) { track in
+                TrackView(track: track)
+            }
         }
     }
 }

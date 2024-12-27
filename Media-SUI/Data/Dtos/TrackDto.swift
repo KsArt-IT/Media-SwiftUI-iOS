@@ -11,11 +11,11 @@ struct TrackDto: Decodable {
     let id: String
     let name: String
     let duration: Int
-    let artistID: String
+    let artistID: String?
     let artistName: String
     let artistIdstr: String
     let albumName: String
-    let albumID: String
+    let albumID: String?
     let licenseCcurl: String
     let position: Int
     let releasedate: String
@@ -25,9 +25,9 @@ struct TrackDto: Decodable {
     let prourl: String
     let shorturl: String
     let shareurl: String
-    let waveform: Waveform
+    let waveform: Waveform?
     let image: String
-    let musicinfo: Musicinfo
+    let musicinfo: Musicinfo?
     let audiodownloadAllowed: Bool
 }
 
@@ -37,11 +37,11 @@ extension TrackDto {
             id: self.id,
             name: self.name,
             duration: self.duration,
-            artistID: self.artistID,
+            artistID: self.artistID ?? "",
             artistName: self.artistName,
             artistIdstr: self.artistIdstr,
             albumName: self.albumName,
-            albumID: self.albumID,
+            albumID: self.albumID ?? "",
             licenseCcurl: self.licenseCcurl,
             position: self.position,
             releasedate: self.releasedate,
@@ -50,9 +50,9 @@ extension TrackDto {
             audiodownload: self.audiodownload,
             shorturl: self.shorturl,
             shareurl: self.shareurl,
-            waveform: self.waveform.peaks,
+            waveform: self.waveform?.peaks ?? [],
             image: data,
-            musicinfo: self.musicinfo.gender
+            musicinfo: self.musicinfo?.gender ?? ""
         )
     }
 }

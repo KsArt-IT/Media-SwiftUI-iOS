@@ -14,9 +14,22 @@
 		F1E1EE772CF71C630040AE99 /* Media-SUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Media-SUI.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		F1A980D02D1EF68100E8AADC /* Exceptions for "Media-SUI" folder in "Media-SUI" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = F1E1EE762CF71C630040AE99 /* Media-SUI */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		F1E1EE792CF71C630040AE99 /* Media-SUI */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				F1A980D02D1EF68100E8AADC /* Exceptions for "Media-SUI" folder in "Media-SUI" target */,
+			);
 			path = "Media-SUI";
 			sourceTree = "<group>";
 		};
@@ -138,6 +151,8 @@
 /* Begin XCBuildConfiguration section */
 		F1E1EE832CF71C650040AE99 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = F1E1EE792CF71C630040AE99 /* Media-SUI */;
+			baseConfigurationReferenceRelativePath = Secrets.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -202,6 +217,8 @@
 		};
 		F1E1EE842CF71C650040AE99 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = F1E1EE792CF71C630040AE99 /* Media-SUI */;
+			baseConfigurationReferenceRelativePath = Secrets.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -268,6 +285,7 @@
 				DEVELOPMENT_TEAM = 56FX6RXGXW;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Media-SUI/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Music center";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "We use your microphone to record sound.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -304,6 +322,7 @@
 				DEVELOPMENT_TEAM = 56FX6RXGXW;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Media-SUI/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "Music center";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "We use your microphone to record sound.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     @Environment(\.diManager) private var di
-    @State private var selectedTab: Tab = .recorder
+    @State private var selectedTab: Tab = .search
     
     var body: some View {
         TabView(selection: $selectedTab) {

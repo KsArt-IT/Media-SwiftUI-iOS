@@ -29,10 +29,12 @@ enum Constants {
     static let waveformInterval = 0.05 // 24 раза в секунду
     
     static let radius: CGFloat = 10
+    static let cornerSize = CGSize(width: 8, height: 8)
     
     static let shadowRadius: CGFloat = 8
     static let shadowOffset: CGFloat = shadowRadius / 2
     
     static let small: CGFloat = 8
     static let medium: CGFloat = 16
+    static let smalImage: CGFloat = 100
 }
