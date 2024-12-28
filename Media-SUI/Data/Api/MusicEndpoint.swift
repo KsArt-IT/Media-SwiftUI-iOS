@@ -28,10 +28,12 @@ extension MusicEndpoint {
         switch self {
         case .tracks(let offset):
             createUrl(
-                path: "/tracks",
+                path: "/tracks/",
                 query: [
                     Self.offsetParam: "\(offset * Self.limit)",
-                    Self.limitParam: "\(Self.limit)"
+                    Self.limitParam: "\(Self.limit)",
+                    Self.includeParam: "musicinfo",
+                    Self.groupbyParam: "artist_id"
                 ]
             )
         case .image(let url):
@@ -61,7 +63,6 @@ extension MusicEndpoint {
         URLQueryItem(name: key, value: value)
     }
     
-    // https://api.jamendo.com/v3.0/tracks?client_id=c98dd4d5&format=json&offset=0&limit=10
     private static let baseUrl = "https://api.jamendo.com/v3.0"
     // Query params
     private static let clientIdParam = "client_id"
@@ -70,7 +71,9 @@ extension MusicEndpoint {
     private static let offsetParam = "offset"
     private static let limitParam = "limit"
     private static let limit = 10
-    
+    private static let includeParam = "include"
+    private static let groupbyParam = "groupby"
+
     // api key
     static let clientId = Bundle.main.object(forInfoDictionaryKey: "JAMENDO_API_CLIENT_ID") as? String ??
     "Please add your 'client_id' to the project"

@@ -25,7 +25,7 @@ struct TrackDto: Decodable {
     let prourl: String
     let shorturl: String
     let shareurl: String
-    let waveform: Waveform?
+    let waveform: String?
     let image: String
     let musicinfo: Musicinfo?
     let audiodownloadAllowed: Bool
@@ -50,9 +50,11 @@ extension TrackDto {
             audiodownload: self.audiodownload,
             shorturl: self.shorturl,
             shareurl: self.shareurl,
-            waveform: self.waveform?.peaks ?? [],
+            waveform: [],
             image: data,
             musicinfo: self.musicinfo?.gender ?? ""
         )
     }
 }
+// TODO: - реализовать преобразование waveform
+// "waveform":"{\"peaks\":[38,1,32,11,0,37,3,22,21,1,33,7,5,41,18,36,29,37,74,40,47,59,32,59,19,33,38,14,44,36,29,59,31,35,30,43,34,21,18,0,0,0,0,0,0,0,0,0]}",
