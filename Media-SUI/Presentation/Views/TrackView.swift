@@ -13,7 +13,6 @@ struct TrackView: View {
     var body: some View {
         HStack {
             ImageDataView(data: track.image)
-                .padding(.horizontal)
             VStack {
                 Text(track.artistName)
                     .font(.title)
@@ -21,13 +20,10 @@ struct TrackView: View {
                     .font(.subheadline)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal)
             Text(track.duration.toTime())
-                .padding(.horizontal)
         }
-        .padding(.vertical)
         .cornerRadius(Constants.radius)
-        .listRowInsets(EdgeInsets(top: 4, leading: 0, bottom: 4, trailing: 0))
-        .listRowSeparator(.hidden)
     }
 }
 

@@ -14,13 +14,24 @@ struct SearchScreen: View {
         VStack {
             TitleTextView("Music search")
             
-            List(viewModel.tracks) { track in
-                TrackView(track: track)
+            ScrollView(.vertical, showsIndicators: false) {
+                LazyVStack(spacing: 12) {
+                    ForEach(viewModel.tracks) { track in
+                        TrackView(track: track)
+                    }
+                    // отобразим дозагрузку
+                    ReloadingView(state: $viewModel.tracksState) {
+                        viewModel.loadTracksFirst()
+                    }
+                    .font(.title)
+                    .padding()
+                }
+                .padding(.top, Constants.small)
             }
         }
     }
 }
 
 #Preview {
-//    SearchScreen(viewModel: SearchScreenViewModel())
+    //    SearchScreen(viewModel: SearchScreenViewModel())
 }
