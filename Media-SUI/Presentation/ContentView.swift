@@ -30,6 +30,7 @@ fileprivate enum Tab: LocalizedStringKey, CaseIterable {
 }
 
 fileprivate extension View {
+    @ViewBuilder
     func tabMenu (_ tab: Tab, icon: String) -> some View {
         self
             .tag(tab)

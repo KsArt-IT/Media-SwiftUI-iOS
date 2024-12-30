@@ -19,6 +19,8 @@ struct TitleTextView: View {
         Text(text)
             .font(.title)
             .fontWeight(.bold)
+            .multilineTextAlignment(.center)
+            .lineLimit(2)
             .shadow(radius: Constants.shadowRadius, x: Constants.shadowOffset, y: Constants.shadowOffset)
             .padding(.bottom, Constants.small)
             .opacity(show ? 1.0 : 0.0)

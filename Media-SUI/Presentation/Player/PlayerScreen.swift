@@ -10,8 +10,7 @@ import SwiftUI
 struct PlayerScreen: View {
     var body: some View {
         VStack {
-            Text("Music player")
-                .font(.title)
+            TitleTextView("Music player")
             Spacer()
         }
     }
