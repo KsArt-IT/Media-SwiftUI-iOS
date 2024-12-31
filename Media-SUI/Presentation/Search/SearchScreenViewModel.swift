@@ -19,7 +19,7 @@ final class SearchScreenViewModel: ObservableObject {
     init(repository: MusicRepository) {
         self.repository = repository
         
-        loadTracksFirst()
+//        loadTracksFirst()
     }
     
     public func loadTracksFirst() {

@@ -1,6 +1,12 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "0:00" : {
+
+    },
+    "3:31" : {
+
+    },
     "Audio recorder" : {
       "localizations" : {
         "ru" : {
@@ -99,6 +105,12 @@
           }
         }
       }
+    },
+    "iJustine`s Airpods" : {
+
+    },
+    "Look What You Made Me do" : {
+
     },
     "Music player" : {
       "localizations" : {
@@ -245,10 +257,16 @@
         }
       }
     },
+    "Taylor Swift" : {
+
+    },
     "The request is invalid." : {
 
     },
     "The response is invalid, code" : {
+
+    },
+    "Title of the composition" : {
 
     }
   },

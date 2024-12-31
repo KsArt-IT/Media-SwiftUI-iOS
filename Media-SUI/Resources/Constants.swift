@@ -30,11 +30,17 @@ enum Constants {
     
     static let radius: CGFloat = 10
     static let cornerSize = CGSize(width: 8, height: 8)
-    
+
+    static let cornerSizeSmall = CGSize(width: 6, height: 6)
+    static let cornerSizeMedium = CGSize(width: 16, height: 16)
+
     static let shadowRadius: CGFloat = 8
     static let shadowOffset: CGFloat = shadowRadius / 2
     
     static let small: CGFloat = 8
     static let medium: CGFloat = 16
     static let smalImage: CGFloat = 100
+    
+    static let bgGeometryEffectId = "BGVIEW"
+    static let artGeometryEffectId = "ARTWORK"
 }

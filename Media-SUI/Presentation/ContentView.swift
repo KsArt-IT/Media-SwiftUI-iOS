@@ -9,7 +9,10 @@ import SwiftUI
 
 struct ContentView: View {
     @Environment(\.diManager) private var di
-    @State private var selectedTab: Tab = .search
+    @State private var selectedTab: Tab = .player
+    // Animation Properties
+    @State private var expandSheet: Bool = false
+    @Namespace private var animation
     
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -20,6 +23,17 @@ struct ContentView: View {
             SearchScreen(viewModel: di.resolve())
                 .tabMenu(Tab.search, icon: "mail.and.text.magnifyingglass")
         }
+        .safeAreaInset(edge: .bottom) {
+            CustomBottomSheet(expandSheet: $expandSheet, animation: animation)
+        }
+        .overlay {
+            if expandSheet {
+                ExpandedBottomSheet(expandSheet: $expandSheet, animation: animation)
+                    .transition(.asymmetric(insertion: .identity, removal: .offset(y: -5)))
+            }
+        }
+        // Hiding Tab Bar When Aheet is Expanded
+            .toolbar(expandSheet ? .hidden : .visible, for: .tabBar)
     }
 }
 
