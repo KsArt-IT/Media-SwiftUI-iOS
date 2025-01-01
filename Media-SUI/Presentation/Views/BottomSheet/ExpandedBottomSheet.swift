@@ -11,6 +11,7 @@ struct ExpandedBottomSheet: View {
     @Binding var expandSheet: Bool
     var animation: Namespace.ID
     @State private var animateContent: Bool = false
+    @State private var offsetY: CGFloat = 0
     
     var body: some View {
         GeometryReader {
@@ -18,11 +19,12 @@ struct ExpandedBottomSheet: View {
             let safeArea = $0.safeAreaInsets
             
             ZStack {
-                Rectangle()
+                // Marking it as Rounded Rectangle with Device Corner Radius
+                RoundedRectangle(cornerSize: animateContent ? deviceCornerRadius : CGSizeZero, style: .continuous)
                     .fill(.ultraThickMaterial)
                     .overlay {
-                        Rectangle()
-                            .fill(.background)
+                        RoundedRectangle(cornerSize: animateContent ? deviceCornerRadius : CGSizeZero, style: .continuous)
+                            .fill(.yellow)
                             .opacity(animateContent ? 1 : 0)
                     }
                     .overlay(alignment: .top) {
@@ -38,7 +40,9 @@ struct ExpandedBottomSheet: View {
                         .fill(.gray)
                         .frame(width: 40, height: 5)
                         .opacity(animateContent ? 1 : 0)
-                    
+                    // Mathing with Slide Animation
+                        .offset(y: animateContent ? 0 : size.height)
+
                     // Artwork Hero View
                     GeometryReader {
                         let size = $0.size
@@ -50,17 +54,16 @@ struct ExpandedBottomSheet: View {
                             .frame(width: imageSize, height: imageSize)
                             .clipShape(
                                 RoundedRectangle(
-                                    cornerSize: expandSheet ? Constants.cornerSizeMedium : Constants.cornerSizeSmall,
+                                    cornerSize: animateContent ? Constants.cornerSizeMedium : Constants.cornerSizeSmall,
                                     style: .continuous
                                 )
                             )
                     }
                     .matchedGeometryEffect(id: Constants.artGeometryEffectId, in: animation)
                     // For Square Artwork Image
-                    .frame(width: size.width - 50)
+//                    .frame(width: size.width - 50)
                     // For Smaller Devices the padding will be 10 and for larger devices the padding will be 30
-                    .padding(.vertical, size.height < 700 ? 10 : 30)
-                    .border(.red)
+//                    .padding(.all, size.height < 700 ? 10 : 30)
                     
                     // Player View
                     PlayerView(size)
@@ -72,14 +75,25 @@ struct ExpandedBottomSheet: View {
                 .padding(.horizontal, 25)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                 .clipped()
-                // For testing UI
-                .onTapGesture {
-                    withAnimation(.easeInOut(duration: 0.3)) {
-                        expandSheet = false
-                        animateContent = false
-                    }
-                }
             }
+            .contentShape(Rectangle())
+            .offset(y: offsetY)
+            .gesture(
+                DragGesture()
+                    .onChanged({ value in
+                        let translationY = value.translation.height
+                        offsetY = (translationY > 0 ? translationY : 0)
+                    }).onEnded({ value in
+                        withAnimation(.easeInOut(duration: 0.35)) {
+                            if offsetY > size.height * 0.15 {
+                                expandSheet = false
+                                animateContent = false
+                            } else {
+                                offsetY = .zero
+                            }
+                        }
+                    })
+            )
             .ignoresSafeArea(.container, edges: .all)
         }
         .onAppear {
@@ -142,7 +156,7 @@ struct ExpandedBottomSheet: View {
                         Text("3:31")
                             .font(.caption)
                             .foregroundStyle(.gray)
-
+                        
                     }
                     
                 }
@@ -190,7 +204,7 @@ struct ExpandedBottomSheet: View {
                             .fill(.ultraThinMaterial)
                             .environment(\.colorScheme, .light)
                             .frame(height: 5)
-
+                        
                         Image(systemName: "speaker.wave.3.fill")
                             .foregroundStyle(.gray)
                         
@@ -236,5 +250,17 @@ struct ExpandedBottomSheet: View {
 }
 
 #Preview {
-//    ExpandedBottomSheet()
+    //    ExpandedBottomSheet()
+}
+
+extension View {
+    var deviceCornerRadius: CGSize {
+        let key = "_displayCornerRadius"
+        return if let screen = (UIApplication.shared.connectedScenes.first as? UIWindowScene)?.windows.first?.screen,
+                  let cornerRadius = screen.value(forKey: key) as? CGFloat {
+            CGSizeMake(cornerRadius, cornerRadius)
+        } else {
+            CGSizeZero
+        }
+    }
 }

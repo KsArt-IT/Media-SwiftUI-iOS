@@ -33,7 +33,7 @@ struct ContentView: View {
             }
         }
         // Hiding Tab Bar When Aheet is Expanded
-            .toolbar(expandSheet ? .hidden : .visible, for: .tabBar)
+        .toolbar(expandSheet ? .hidden : .visible, for: .tabBar)
     }
 }
 

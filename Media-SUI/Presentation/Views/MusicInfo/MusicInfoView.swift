@@ -64,7 +64,7 @@ struct MusicInfoView: View {
         .contentShape(Rectangle())
         .onTapGesture {
             // Expanding Bottom Sheet
-            withAnimation(.easeInOut(duration: 0.3)) {
+            withAnimation(.easeInOut(duration: 0.5)) {
                 expandSheet = true
             }
         }

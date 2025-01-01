@@ -27,6 +27,7 @@ struct SearchScreen: View {
                     .padding()
                 }
                 .padding(.top, Constants.small)
+                .padding(.bottom, 100)
             }
         }
     }
