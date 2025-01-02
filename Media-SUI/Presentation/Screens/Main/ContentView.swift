@@ -10,24 +10,28 @@ import SwiftUI
 struct ContentView: View {
     @Environment(\.diManager) private var di
     @State private var selectedTab: Tab = .player
+    // выбранный трек для проигрывания
+    @State private var selectedTrack: Track?
     // Animation Properties
     @State private var expandSheet: Bool = false
     @Namespace private var animation
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            PlayerScreen()
+            MusicListScreen()
                 .tabMenu(Tab.player, icon: "play.square")
             RecorderScreen(viewModel: di.resolve())
                 .tabMenu(Tab.recorder, icon: "mic.square")
-            SearchScreen(viewModel: di.resolve())
+            SearchScreen(viewModel: di.resolve(), selected: $selectedTrack)
                 .tabMenu(Tab.search, icon: "mail.and.text.magnifyingglass")
         }
+        // отображение плеера в свернутом виде
         .safeAreaInset(edge: .bottom) {
             CustomBottomSheet(expandSheet: $expandSheet, animation: animation)
         }
         .overlay {
             if expandSheet {
+                // отображение плеера в развернутом виде
                 ExpandedBottomSheet(expandSheet: $expandSheet, animation: animation)
                     .transition(.asymmetric(insertion: .identity, removal: .offset(y: -5)))
             }
@@ -55,7 +59,7 @@ fileprivate extension View {
                     Image(systemName: icon)
                 }
             }
-        // изменить цвет TabView
+        // изменить цвет TabView, необходимо для кажого, поэтому расположено тут
             .toolbarBackground(.visible, for: .tabBar)
             .toolbarBackground(.ultraThickMaterial, for: .tabBar)
     }

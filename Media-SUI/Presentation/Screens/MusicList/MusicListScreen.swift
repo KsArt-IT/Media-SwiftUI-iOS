@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct PlayerScreen: View {
+struct MusicListScreen: View {
     var body: some View {
         VStack {
             TitleTextView("Music player")
@@ -17,5 +17,5 @@ struct PlayerScreen: View {
 }
 
 #Preview {
-    PlayerScreen()
+    MusicListScreen()
 }

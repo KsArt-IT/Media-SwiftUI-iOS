@@ -18,7 +18,6 @@ final class RecorderViewModel: NSObject, ObservableObject {
     @Published var isRecording = false
     @Published var isRecordingButtonDisabled = false
     
-    
     private var audioPlayer: AVAudioPlayer?
     @Published var currentPlaying: URL?
     private var task: Task<(), Never>?

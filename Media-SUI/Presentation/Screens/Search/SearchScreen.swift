@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SearchScreen: View {
     @StateObject var viewModel: SearchScreenViewModel
+    @Binding var selected: Track?
     
     var body: some View {
         VStack {
@@ -18,6 +19,10 @@ struct SearchScreen: View {
                 LazyVStack(spacing: 12) {
                     ForEach(viewModel.tracks) { track in
                         TrackView(track: track)
+                            .onTapGesture {
+                                print("select=\(track)")
+                                selected = track
+                            }
                     }
                     // отобразим дозагрузку
                     ReloadingView(state: $viewModel.tracksState) {
