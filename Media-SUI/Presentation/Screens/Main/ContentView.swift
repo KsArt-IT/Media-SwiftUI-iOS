@@ -25,17 +25,7 @@ struct ContentView: View {
             SearchScreen(viewModel: di.resolve(), selected: $selectedTrack)
                 .tabMenu(Tab.search, icon: "mail.and.text.magnifyingglass")
         }
-        // отображение плеера в свернутом виде
-        .safeAreaInset(edge: .bottom) {
-            CustomBottomSheet(expandSheet: $expandSheet, animation: animation)
-        }
-        .overlay {
-            if expandSheet {
-                // отображение плеера в развернутом виде
-                ExpandedBottomSheet(expandSheet: $expandSheet, animation: animation)
-                    .transition(.asymmetric(insertion: .identity, removal: .offset(y: -5)))
-            }
-        }
+        .musicPlayer(expand: $expandSheet, animation: animation, selected: $selectedTrack)
         // Hiding Tab Bar When Aheet is Expanded
         .toolbar(expandSheet ? .hidden : .visible, for: .tabBar)
     }
@@ -59,7 +49,7 @@ fileprivate extension View {
                     Image(systemName: icon)
                 }
             }
-        // изменить цвет TabView, необходимо для кажого, поэтому расположено тут
+        // изменить цвет TabView, необходимо для каждого, поэтому расположено тут
             .toolbarBackground(.visible, for: .tabBar)
             .toolbarBackground(.ultraThickMaterial, for: .tabBar)
     }

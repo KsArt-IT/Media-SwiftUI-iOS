@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ExpandedBottomSheet: View {
-    @Binding var expandSheet: Bool
+    @Binding var expand: Bool
     var animation: Namespace.ID
     @State private var animateContent: Bool = false
     @State private var offsetY: CGFloat = 0
@@ -28,7 +28,7 @@ struct ExpandedBottomSheet: View {
                             .opacity(animateContent ? 1 : 0)
                     }
                     .overlay(alignment: .top) {
-                        MusicInfoView(expandSheet: $expandSheet, animation: animation)
+                        MusicInfoView(expandSheet: $expand, animation: animation)
                         // Disabling Interaction (Since it`s not Necessary Here)
                             .allowsHitTesting(false)
                             .opacity(animateContent ? 0 : 1)
@@ -80,19 +80,20 @@ struct ExpandedBottomSheet: View {
             .offset(y: offsetY)
             .gesture(
                 DragGesture()
-                    .onChanged({ value in
+                    .onChanged { value in
                         let translationY = value.translation.height
                         offsetY = (translationY > 0 ? translationY : 0)
-                    }).onEnded({ value in
+                    }
+                    .onEnded { value in
                         withAnimation(.easeInOut(duration: 0.35)) {
                             if offsetY > size.height * 0.15 {
-                                expandSheet = false
+                                expand = false
                                 animateContent = false
                             } else {
                                 offsetY = .zero
                             }
                         }
-                    })
+                    }
             )
             .ignoresSafeArea(.container, edges: .all)
         }
