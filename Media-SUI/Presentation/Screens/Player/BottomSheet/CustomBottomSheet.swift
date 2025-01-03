@@ -8,20 +8,22 @@
 import SwiftUI
 
 struct CustomBottomSheet: View {
-    @Binding var expandSheet: Bool
+    @Binding var expand: Bool
     var animation: Namespace.ID
+    let state: TrackState?
+    let action: (PlayerAction) -> Void
 
     var body: some View {
         // Animating Sheet Background (To Look Like It`s Expanding From the Bottom)
         ZStack {
-            if expandSheet {
+            if expand {
                 Rectangle()
                     .fill(.clear)
             } else {
                 Rectangle()
                     .fill(.ultraThickMaterial)
                     .overlay {
-                        MusicInfoView(expandSheet: $expandSheet, animation: animation)
+                        MusicInfoView(expandSheet: $expand, animation: animation, state: state, action: action)
                     }
                     .matchedGeometryEffect(id: Constants.bgGeometryEffectId, in: animation)
             }

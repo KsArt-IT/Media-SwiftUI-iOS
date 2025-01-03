@@ -10,7 +10,9 @@ import SwiftUI
 struct MusicInfoView: View {
     @Binding var expandSheet: Bool
     var animation: Namespace.ID
-    
+    let state: TrackState?
+    let action: (PlayerAction) -> Void
+
     var body: some View {
         HStack(spacing: 0) {
             // Adding Matched Geometry Effect (Hero Animation)
@@ -20,9 +22,7 @@ struct MusicInfoView: View {
                         let size = $0.size
                         let imageSize = min(size.width, size.height)
                         
-                        Image(.musicImg)
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
+                        ImageDataView(data: state?.image)
                             .frame(width: imageSize, height: imageSize)
                             .clipShape(
                                 RoundedRectangle(
@@ -36,7 +36,7 @@ struct MusicInfoView: View {
             }
             .frame(width: 45, height: 45)
             
-            Text("Title of the composition")
+            Text(state?.name ?? "")
                 .fontWeight(.semibold)
                 .lineLimit(1)
                 .padding(.horizontal, Constants.medium)
@@ -44,14 +44,14 @@ struct MusicInfoView: View {
             Spacer(minLength: 0)
             
             Button {
-                
+                action(.pause)
             } label: {
                 Image(systemName: "pause.fill")
                     .font(.title2)
             }
             .padding(.trailing, Constants.small)
             Button {
-                
+                action(.forward)
             } label: {
                 Image(systemName: "forward.fill")
                     .font(.title2)

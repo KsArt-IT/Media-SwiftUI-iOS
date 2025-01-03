@@ -25,7 +25,7 @@ struct ContentView: View {
             SearchScreen(viewModel: di.resolve(), selected: $selectedTrack)
                 .tabMenu(Tab.search, icon: "mail.and.text.magnifyingglass")
         }
-        .musicPlayer(expand: $expandSheet, animation: animation, selected: $selectedTrack)
+        .musicPlayer(viewModel: di.resolve(), expand: $expandSheet, animation: animation, selected: $selectedTrack)
         // Hiding Tab Bar When Aheet is Expanded
         .toolbar(expandSheet ? .hidden : .visible, for: .tabBar)
     }
