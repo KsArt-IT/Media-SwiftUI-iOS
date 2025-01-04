@@ -8,6 +8,11 @@
 import SwiftUI
 
 struct ContentView: View {
+    // получим тему на устройстве
+    @Environment(\.colorScheme) private var colorScheme
+    // сохраним-загрузим выбранную тему
+    @AppStorage("appTheme") private var appTheme = AppTheme.device
+
     @Environment(\.diManager) private var di
     @State private var selectedTab: Tab = .player
     // выбранный трек для проигрывания
@@ -28,6 +33,7 @@ struct ContentView: View {
         .musicPlayer(viewModel: di.resolve(), expand: $expandSheet, animation: animation, selected: $selectedTrack)
         // Hiding Tab Bar When Aheet is Expanded
         .toolbar(expandSheet ? .hidden : .visible, for: .tabBar)
+        .preferredColorScheme(appTheme.scheme(colorScheme))
     }
 }
 
