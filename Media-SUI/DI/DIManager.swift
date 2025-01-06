@@ -17,6 +17,7 @@ final class DIManager {
         registerRecorderViewModel()
         registerSearchScreenViewModel()
         registerPlayerViewModel()
+        registerMusicListViewModel()
     }
     
     // MARK: Repository
@@ -46,6 +47,12 @@ final class DIManager {
     private func registerPlayerViewModel() {
         container.register(PlayerViewModel.self) { c in
             PlayerViewModel()
+        }.inObjectScope(.container)
+    }
+    
+    private func registerMusicListViewModel() {
+        container.register(MusicListViewModel.self) { c in
+            MusicListViewModel()
         }.inObjectScope(.container)
     }
     
