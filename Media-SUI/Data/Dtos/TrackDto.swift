@@ -52,7 +52,8 @@ extension TrackDto {
             shareurl: self.shareurl,
             waveform: [],
             image: data,
-            musicinfo: self.musicinfo?.gender ?? ""
+            musicinfo: self.musicinfo?.gender ?? "",
+            localUrl: nil
         )
     }
 }

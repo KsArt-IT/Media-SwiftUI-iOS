@@ -27,4 +27,30 @@ struct Track: Identifiable, Hashable {
     let waveform: [Int]
     let image: Data?
     let musicinfo: String
+    let localUrl: URL?
+    
+    public func copy(name: String, url: URL) -> Self {
+        Track(
+            id: self.id,
+            name: name,
+            duration: self.duration,
+            artistID: self.artistID,
+            artistName: self.artistName,
+            artistIdstr: self.artistIdstr,
+            albumName: self.albumName,
+            albumID: self.albumID,
+            licenseCcurl: self.licenseCcurl,
+            position: self.position,
+            releasedate: self.releasedate,
+            albumImage: self.albumImage,
+            audio: self.audio,
+            audiodownload: self.audiodownload,
+            shorturl: self.shorturl,
+            shareurl: self.shareurl,
+            waveform: self.waveform,
+            image: self.image,
+            musicinfo: self.musicinfo,
+            localUrl: url
+        )
+    }
 }
