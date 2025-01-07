@@ -20,6 +20,9 @@ enum Constants {
         return formatter
     }()
 
+    static let musicDir = "MusicCenter"
+    static let musicExt = "mp3"
+
     static let recordingDir = "RecordingMusicCenter"
     static let recordingExt = "m4a"
     static let recordingButton: CGFloat = 120
