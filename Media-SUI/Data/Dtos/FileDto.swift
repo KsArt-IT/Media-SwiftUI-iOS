@@ -16,3 +16,39 @@ struct FileDto: Identifiable, Hashable {
         url
     }
 }
+
+extension FileDto {
+    func toRecording() -> Recording {
+        Recording(
+            n: self.n,
+            name: self.name,
+            url: self.url,
+            date: self.date
+        )
+    }
+    
+    func toTrack() -> Track {
+        Track(
+            id: self.url.absoluteString,
+            name: self.name,
+            duration: 0,
+            artistID: "",
+            artistName: "",
+            artistIdstr: "",
+            albumName: "",
+            albumID: "",
+            licenseCcurl: "",
+            position: 0,
+            releasedate: "",
+            albumImage: "",
+            audio: "",
+            audiodownload: "",
+            shorturl: "",
+            shareurl: "",
+            waveform: [],
+            image: nil,
+            musicinfo: "",
+            localUrl: self.url
+        )
+    }
+}

@@ -13,7 +13,9 @@ final class FileLocalService: LocalService {
     }()
     private var maxIndex = 0
 
-    func fetchFiles(url: URL, ext: String, sortByName: Bool) async -> Result<[FileDto], any Error> {
+    func fetchFiles(dir: String, ext: String, sortByName: Bool) async -> Result<[FileDto], any Error> {
+        guard let url = getDirectoryUrl(dir) else { return .failure(LocalError.directoryError(dir)) }
+        
         do {
             let files = try manager.contentsOfDirectory(
                 at: url,
@@ -80,5 +82,22 @@ final class FileLocalService: LocalService {
         }
 
     }
-    
+ 
+    private func getDirectoryUrl(_ dir: String) -> URL? {
+        
+        let directory = manager.urls(for: .documentDirectory, in: .userDomainMask).first!
+            .appendingPathComponent(dir, conformingTo: .directory)
+        
+        if !manager.fileExists(atPath: directory.path) {
+            do {
+                try manager.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
+            } catch {
+                print("FileLocalService:\(#function): error directory not created \(error.localizedDescription)")
+                return nil
+            }
+        }
+        // TODO: оповестить пользователя, что каталог для записей не создан
+        return directory
+    }
+
 }
