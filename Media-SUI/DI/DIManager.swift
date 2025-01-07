@@ -14,6 +14,7 @@ final class DIManager {
     // MARK: - Registering dependencies
     init() {
         registerRepository()
+        registerRepository()
         registerRecorderViewModel()
         registerSearchScreenViewModel()
         registerPlayerViewModel()
@@ -28,6 +29,16 @@ final class DIManager {
         
         container.register(MusicRepository.self) { c in
             JamendoMusicRepositoryImpl(service: c.resolve(MusicService.self)!)
+        }.inObjectScope(.container)
+    }
+    
+    private func registerLocalRepository() {
+        container.register(LocalService.self) { _ in
+            FileLocalService()
+        }.inObjectScope(.weak)
+        
+        container.register(LocalRepository.self) { c in
+            FileLocalRepository(service: c.resolve(LocalService.self)!)
         }.inObjectScope(.container)
     }
     
