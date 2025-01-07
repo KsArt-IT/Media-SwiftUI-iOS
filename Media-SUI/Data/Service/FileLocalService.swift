@@ -13,7 +13,7 @@ final class FileLocalService: LocalService {
     }()
     private var maxIndex = 0
 
-    func fetchFiles(url: URL) async -> Result<[FileDto], any Error> {
+    func fetchFiles(url: URL, ext: String, sortByName: Bool) async -> Result<[FileDto], any Error> {
         do {
             let files = try manager.contentsOfDirectory(
                 at: url,
@@ -22,7 +22,7 @@ final class FileLocalService: LocalService {
             )
             let list = files
                 .compactMap { url -> FileDto? in
-                    if url.pathExtension == Constants.recordingExt {
+                    if url.pathExtension == ext {
                         let attributes = try? FileManager.default.attributesOfItem(atPath: url.path())
                         let creationDate = attributes?[.creationDate] as? Date ?? Date.now
                         let fileName = url.lastPathComponent
@@ -42,7 +42,13 @@ final class FileLocalService: LocalService {
                         return nil
                     }
                 }
-                .sorted(by: { $0.date < $1.date })
+                .sorted(by: {
+                    if sortByName {
+                        $0.name < $1.name
+                    } else {
+                        $0.date < $1.date
+                    }
+                })
             return .success(list)
         } catch {
             print("FileLocalService:\(#function): fetch files error = \(error.localizedDescription)")
