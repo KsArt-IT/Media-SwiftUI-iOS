@@ -14,7 +14,7 @@ final class DIManager {
     // MARK: - Registering dependencies
     init() {
         registerRepository()
-        registerRepository()
+        registerLocalRepository()
         registerRecorderViewModel()
         registerSearchScreenViewModel()
         registerPlayerViewModel()
@@ -45,7 +45,7 @@ final class DIManager {
     // MARK: - ViewModel
     private func registerRecorderViewModel() {
         container.register(RecorderViewModel.self) { c in
-            RecorderViewModel()
+            RecorderViewModel(repository: c.resolve(LocalRepository.self)!)
         }.inObjectScope(.weak)
     }
     
