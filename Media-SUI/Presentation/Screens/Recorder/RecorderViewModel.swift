@@ -10,6 +10,8 @@ import AVFoundation
 
 // NSObject for PlayerDelegate
 final class RecorderViewModel: NSObject, ObservableObject {
+    private let repository: LocalRepository
+    
     @Published var recordings: [Recording] = []
     @Published var audioLevels: [CGFloat] = Array(repeating: 0.0, count: 30)
     
@@ -27,70 +29,27 @@ final class RecorderViewModel: NSObject, ObservableObject {
     @Published var name = ""
     private var recording: Recording?
     
+    init(repository: LocalRepository) {
+        self.repository = repository
+    }
+    
     // MARK: - Fetch Recordings
     public func fetchRecordings() {
         guard task == nil else { return }
         
         let newTask = Task { [weak self] in
-            if let list = await self?.getRecordings() {
+            let result = await self?.repository.fetchRecorders()
+            switch result {
+            case .success(let list):
                 await self?.setRecordings(list)
+            case .failure(let error):
+                print("RecorderViewModel:\(#function): fetch error = \(error.localizedDescription)")
+            case .none:
+                break
             }
             self?.task = nil
         }
         task = newTask
-    }
-    
-    private func getRecordings() async -> [Recording] {
-        guard let directory = try? getRecordingsDir() else { return [] }
-        
-        do {
-            let files = try FileManager.default.contentsOfDirectory(
-                at: directory,
-                includingPropertiesForKeys: [.creationDateKey],
-                options: .skipsHiddenFiles
-            )
-            let list = files
-                .compactMap { url -> Recording? in
-                    if url.pathExtension == Constants.recordingExt {
-                        let attributes = try? FileManager.default.attributesOfItem(atPath: url.path())
-                        let creationDate = attributes?[.creationDate] as? Date ?? Date.now
-                        let fileName = url.lastPathComponent
-                        let components = fileName.split(separator: "_")
-                        let index = components.count > 1 ? Int(components[1]) ?? 0 : 0
-                        if index > maxIndex {
-                            maxIndex = index
-                        }
-                        
-                        return Recording(
-                            n: index,
-                            name: url.lastPathComponent,
-                            url: url,
-                            date: creationDate
-                        )
-                    } else {
-                        return nil
-                    }
-                }
-                .sorted(by: { $0.date < $1.date })
-            return list
-        } catch {
-            print("RecorderViewModel:\(#function): fetch error = \(error.localizedDescription)")
-            return []
-        }
-    }
-    
-    // Путь для сохранения аудиофайлов
-    private func getRecordingsDir() throws -> URL {
-        let fileManager = FileManager.default
-        let directory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
-            .appendingPathComponent(Constants.recordingDir, conformingTo: .directory)
-        //        print("RecorderViewModel:\(#function): path = \(directory.absoluteString)")
-        
-        if !fileManager.fileExists(atPath: directory.path) {
-            try fileManager.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
-        }
-        // TODO: оповестить пользователя, что каталог для записей не создан
-        return directory
     }
     
     @MainActor
@@ -119,12 +78,12 @@ final class RecorderViewModel: NSObject, ObservableObject {
     }
     
     private func startRecording() async {
-        print("RecorderViewModel:\(#function)")
+//        print("RecorderViewModel:\(#function)")
         do {
             audioRecorder = try await getRecorder()
             audioRecorder?.record() // start
         } catch {
-            print("Error: \(error.localizedDescription)")
+            print("RecorderViewModel:\(#function): Error: \(error.localizedDescription)")
         }
     }
     
@@ -149,13 +108,14 @@ final class RecorderViewModel: NSObject, ObservableObject {
     private func getRecorder() async throws -> AVAudioRecorder {
         // Запрос разрешения на микрофон
         guard await AVAudioApplication.requestRecordPermission() else { throw AudioRecorderError.permissionDenied }
+        guard let url = await getNextRecordingUrl() else { throw LocalError.directoryError(Constants.recordingDir) }
         
         let session = AVAudioSession.sharedInstance()
         try session.setCategory(.playAndRecord, mode: .default, options: .defaultToSpeaker)
         try session.setActive(true)
 
         let recorder = try AVAudioRecorder(
-            url: getPathRecordingNext(),
+            url: url,
             settings: getSettingsRecording()
         )
         recorder.delegate = self
@@ -164,15 +124,15 @@ final class RecorderViewModel: NSObject, ObservableObject {
         return recorder
     }
     
-    private func getPathRecordingNext() throws -> URL {
-        maxIndex += 1
-        let index = String(format: "%03d", maxIndex)
-        let date = Date.now.toFileName()
-        let fileName = "Recording_\(index)_\(date).\(Constants.recordingExt)"
+    private func getNextRecordingUrl() async -> URL? {
+        let result = await repository.getNextRecordingUrl()
         
-        let path = try getRecordingsDir().appendingPathComponent(fileName, conformingTo: .fileURL)
-        //        print("RecorderViewModel:\(#function): path = \(path.absoluteString)")
-        return path
+        switch result {
+        case .success(let url):
+            return url
+        case .failure(let failure):
+            return nil
+        }
     }
     
     private func getSettingsRecording() -> [String : Any] {
@@ -265,11 +225,17 @@ final class RecorderViewModel: NSObject, ObservableObject {
     
     // MARK: - Operation
     public func delete(_ url: URL) {
-        do {
-            try FileManager.default.removeItem(at: url)
-            recordings.removeAll(where: { $0.url == url })
-        } catch {
-            print("Error: delete \(error.localizedDescription)")
+        Task { [weak self] in
+            let result = await self?.repository.delete(at: url)
+            
+            switch result {
+            case .success(_):
+                self?.recordings.removeAll(where: { $0.url == url })
+            case .failure(let error):
+                print("Error: delete \(error.localizedDescription)")
+            case .none:
+                break
+            }
         }
     }
     
@@ -281,39 +247,34 @@ final class RecorderViewModel: NSObject, ObservableObject {
     }
     
     public func rename() {
-        guard let recording, !name.isEmpty, recording.name != name else { return }
-        
         Task { [weak self] in
-            await self?.renameRecording(recording, to: self?.name)
-        }
-    }
-    
-    private func renameRecording(_ recording: Recording, to newName: String?) async {
-        guard let newName else { return }
-        
-        if let newUrl = renameFile(at: recording.url, to: newName), let index = recordings.firstIndex(of: recording) {
-            await MainActor.run { [weak self] in
-                self?.recordings[index] = Recording(
-                    n: recording.n,
-                    name: newName,
-                    url: newUrl,
-                    date: recording.date
-                )
+            guard let recording = self?.recording, let name = self?.name, !name.isEmpty, recording.name != name else { return }
+
+            let result = await self?.repository.rename(at: recording.url, to: name)
+            
+            switch result {
+            case .success(let url):
+                await self?.renameRecording(recording, to: name, at: url)
+            case .failure(let error):
+                print("Error: rename \(error.localizedDescription)")
+            case .none:
+                break
             }
         }
     }
     
-    private func renameFile(at url: URL, to newName: String) -> URL? {
-        let newURL = url.deletingLastPathComponent().appendingPathComponent(newName)
-        
-        do {
-            try FileManager.default.moveItem(at: url, to: newURL)
-            return newURL
-        } catch {
-            print("Error renaming file: \(error.localizedDescription)")
-            return nil
+    @MainActor
+    private func renameRecording(_ recording: Recording, to newName: String, at newUrl: URL) async {
+        if let index = recordings.firstIndex(of: recording) {
+            recordings[index] = Recording(
+                n: recording.n,
+                name: newName,
+                url: newUrl,
+                date: recording.date
+            )
         }
     }
+    
 }
 
 // MARK: - PlayerDelegate

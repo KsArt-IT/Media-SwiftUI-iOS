@@ -82,5 +82,5 @@ struct RecorderScreen: View {
 }
 
 #Preview {
-    RecorderScreen(viewModel: RecorderViewModel())
+//    RecorderScreen(viewModel: RecorderViewModel())
 }
