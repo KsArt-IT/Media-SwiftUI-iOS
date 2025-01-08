@@ -9,6 +9,7 @@ import Foundation
 
 protocol LocalService: AnyObject {
     func fetchFiles(dir: String, ext: String, sortByName: Bool) async -> Result<[FileDto], any Error>
-    func rename(at url: URL, to name: String) async -> Result<URL, Error>
-    func delete(at url: URL) async -> Result<Bool, Error>
+    func getNextFileUrl(dir: String, ext: String, prefix: String) async -> Result<URL, any Error>
+    func rename(at url: URL, to name: String) async -> Result<URL, any Error>
+    func delete(at url: URL) async -> Result<Bool, any Error>
 }

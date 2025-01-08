@@ -12,7 +12,7 @@ final class FileLocalService: LocalService {
         FileManager.default
     }()
     private var maxIndex = 0
-
+    
     func fetchFiles(dir: String, ext: String, sortByName: Bool) async -> Result<[FileDto], any Error> {
         guard let url = getDirectoryUrl(dir) else { return .failure(LocalError.directoryError(dir)) }
         
@@ -56,7 +56,19 @@ final class FileLocalService: LocalService {
             print("FileLocalService:\(#function): fetch files error = \(error.localizedDescription)")
             return .failure(error)
         }
-
+        
+    }
+    
+    func getNextFileUrl(dir: String, ext: String, prefix: String) async -> Result<URL, any Error>  {
+        maxIndex += 1
+        let index = String(format: "%03d", maxIndex)
+        let date = Date.now.toFileName()
+        let fileName = "\(prefix)_\(index)_\(date).\(ext)"
+        
+        if let path = getDirectoryUrl(dir) {
+            return .success(path.appendingPathComponent(fileName, conformingTo: .fileURL))
+        }
+        return .failure(LocalError.directoryError(dir))
     }
     
     func rename(at url: URL, to name: String) async -> Result<URL, any Error> {
@@ -69,7 +81,7 @@ final class FileLocalService: LocalService {
             print("FileLocalService:\(#function): error renaming file: \(error.localizedDescription)")
             return .failure(error)
         }
-
+        
     }
     
     func delete(at url: URL) async -> Result<Bool, any Error> {
@@ -80,9 +92,9 @@ final class FileLocalService: LocalService {
             print("FileLocalService:\(#function): error deleting file \(error.localizedDescription)")
             return .failure(error)
         }
-
+        
     }
- 
+    
     private func getDirectoryUrl(_ dir: String) -> URL? {
         
         let directory = manager.urls(for: .documentDirectory, in: .userDomainMask).first!
@@ -99,5 +111,5 @@ final class FileLocalService: LocalService {
         // TODO: оповестить пользователя, что каталог для записей не создан
         return directory
     }
-
+    
 }

@@ -24,6 +24,21 @@ final class FileLocalRepository: LocalRepository {
         }
     }
     
+    func getNextRecordingUrl() async -> Result<URL, any Error> {
+        let result = await service.getNextFileUrl(
+            dir: Constants.recordingDir,
+            ext: Constants.recordingExt,
+            prefix: Constants.recordingPrefix
+        )
+        
+        switch result {
+        case .success(let url):
+            return .success(url)
+        case .failure(let error):
+            return .failure(error)
+        }
+    }
+
     func fetchTracks() async -> Result<[Track], any Error> {
         let result = await service.fetchFiles(dir: Constants.musicDir, ext: Constants.musicExt, sortByName: false)
         switch result {
@@ -55,6 +70,5 @@ final class FileLocalRepository: LocalRepository {
             return .failure(error)
         }
     }
-    
     
 }
