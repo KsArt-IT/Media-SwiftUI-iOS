@@ -9,4 +9,5 @@ import Foundation
 
 protocol MusicRepository: AnyObject {
     func fetchTracks(page: Int) async -> Result<[Track], Error>
+    func fetchTrack(url: String) async -> Result<Data, any Error>
 }

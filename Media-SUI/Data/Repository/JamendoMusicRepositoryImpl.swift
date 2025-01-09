@@ -42,4 +42,14 @@ final class JamendoMusicRepositoryImpl: MusicRepository {
         }
     }
     
+    // загрузка файлов по url
+    func fetchTrack(url: String) async -> Result<Data, any Error> {
+        guard let url = URL(string: url)  else { return .failure(NetworkError.networkError(url)) }
+        
+        let request = URLRequest(url: url)
+        if let data = try? await service.fetchData(for: request) {
+            return .success(data)
+        }
+        return .failure(NetworkError.networkError(url.absoluteString))
+    }
 }

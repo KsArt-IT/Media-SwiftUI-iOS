@@ -49,7 +49,7 @@ final class JamendoMusicServiceImpl: MusicService {
     }
     
     // MARK: - URLRequest
-    private func fetchData(for reques: URLRequest) async throws -> Data {
+    func fetchData(for reques: URLRequest) async throws -> Data {
 //        print("JamendoMusicServiceImpl: \(#function)")
         let (data, response) = try await session.data(for: reques)
         if let code = getErrorCode(for: response) {
