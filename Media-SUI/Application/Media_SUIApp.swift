@@ -9,9 +9,12 @@ import SwiftUI
 
 @main
 struct Media_SUIApp: App {
+    @Environment(\.diManager) private var di
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(viewModel: di.resolve())
+                .environmentDI(di)
         }
     }
     init() {
