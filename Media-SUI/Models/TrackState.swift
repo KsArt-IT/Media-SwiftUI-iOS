@@ -10,6 +10,7 @@ import Foundation
 struct TrackState {
     let id: String
     let name: String
+    let currentTime: Int
     let duration: Int
     let artistName: String
     let image: Data?
