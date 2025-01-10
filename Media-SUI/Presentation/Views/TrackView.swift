@@ -48,7 +48,8 @@ struct TrackView: View {
             shareurl: "https:\\www.jamendo.com\\track\\168",
             waveform: [],
             image: nil,
-            musicinfo: ""
+            musicinfo: "",
+            localUrl: nil
         )
     )
 }
