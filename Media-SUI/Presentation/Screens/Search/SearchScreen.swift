@@ -20,8 +20,8 @@ struct SearchScreen: View {
                     ForEach(viewModel.tracks) { track in
                         TrackView(track: track)
                             .onTapGesture {
-                                print("select=\(track)")
-                                selected = track
+//                                print("select=\(track)")
+                                viewModel.download(track)
                             }
                     }
                     // отобразим дозагрузку
@@ -34,6 +34,9 @@ struct SearchScreen: View {
                 .padding(.top, Constants.small)
                 .padding(.bottom, 100)
             }
+        }
+        .onChange(of: viewModel.currentTrack) { _, newValue in
+            selected = newValue
         }
     }
 }

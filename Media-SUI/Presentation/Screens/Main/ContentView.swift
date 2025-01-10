@@ -12,7 +12,7 @@ struct ContentView: View {
     @Environment(\.colorScheme) private var colorScheme
     // сохраним-загрузим выбранную тему
     @AppStorage("appTheme") private var appTheme = AppTheme.device
-
+    
     @Environment(\.diManager) private var di
     @State private var selectedTab: Tab = .player
     // выбранный трек для проигрывания
@@ -20,10 +20,11 @@ struct ContentView: View {
     // Animation Properties
     @State private var expandSheet: Bool = false
     @Namespace private var animation
+    @StateObject var viewModel: PlayerViewModel
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            MusicListScreen()
+            MusicListScreen(viewModel: di.resolve(), selected: $selectedTrack)
                 .tabMenu(Tab.player, icon: "play.square")
             RecorderScreen(viewModel: di.resolve())
                 .tabMenu(Tab.recorder, icon: "mic.square")
@@ -62,5 +63,5 @@ fileprivate extension View {
 }
 
 #Preview {
-    ContentView()
+//    ContentView()
 }

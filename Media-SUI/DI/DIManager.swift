@@ -51,7 +51,10 @@ final class DIManager {
     
     private func registerSearchScreenViewModel() {
         container.register(SearchScreenViewModel.self) { c in
-            SearchScreenViewModel(repository: c.resolve(MusicRepository.self)!)
+            SearchScreenViewModel(
+                repository: c.resolve(MusicRepository.self)!,
+                localRepository: c.resolve(LocalRepository.self)!
+            )
         }.inObjectScope(.weak)
     }
     
