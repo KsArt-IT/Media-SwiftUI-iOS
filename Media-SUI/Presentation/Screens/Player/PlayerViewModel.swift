@@ -14,6 +14,7 @@ final class PlayerViewModel: NSObject, ObservableObject {
     private var track: Track?
     private var audioPlayer: AVAudioPlayer?
     private var currentPlaying: URL?
+    private var currentTime: Int = 0
     
     public func player(of action: PlayerAction) {
         switch action {
@@ -55,6 +56,7 @@ final class PlayerViewModel: NSObject, ObservableObject {
             state = TrackState(
                 id: track.id,
                 name: track.name,
+                currentTime: self.currentTime,
                 duration: track.duration,
                 artistName: track.artistName,
                 image: track.image
