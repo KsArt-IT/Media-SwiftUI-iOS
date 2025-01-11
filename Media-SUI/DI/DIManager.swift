@@ -66,7 +66,7 @@ final class DIManager {
     
     private func registerMusicListViewModel() {
         container.register(MusicListViewModel.self) { c in
-            MusicListViewModel()
+            MusicListViewModel(localRepository: c.resolve(LocalRepository.self)!)
         }.inObjectScope(.container)
     }
     
