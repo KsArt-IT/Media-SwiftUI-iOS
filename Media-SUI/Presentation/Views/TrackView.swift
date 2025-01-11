@@ -14,8 +14,10 @@ struct TrackView: View {
         HStack {
             ImageDataView(data: track.image)
             VStack {
-                Text(track.artistName)
+                Text(track.name)
                     .font(.title)
+                Text(track.artistName)
+                    .font(.subheadline)
                 Text(track.albumName)
                     .font(.subheadline)
             }
