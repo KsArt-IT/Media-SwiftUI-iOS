@@ -8,6 +8,8 @@
 import SwiftUI
 
 final class MusicListViewModel: ObservableObject {
+    private let localRepository: LocalRepository
+
     @Published var tracks: [Track] = []
     @Published var isRenameVisible = false
     @Published var name = ""
@@ -16,105 +18,66 @@ final class MusicListViewModel: ObservableObject {
 
     private var task: Task<(), Never>?
     private var maxIndex = 0
+
+    init(localRepository: LocalRepository) {
+        self.localRepository = localRepository
+    }
     
     // MARK: - Get MusicSongs
     public func updateMusicSongsList() {
+        print("RecorderViewModel:\(#function)")
         guard task == nil else { return }
         
         let newTask = Task { [weak self] in
-            if let list = await self?.getMusicSongs() {
-                await self?.setMusicSongs(list)
+            if let tracks = await self?.getMusicSongs() {
+                await self?.setMusicSongs(tracks)
             }
             self?.task = nil
         }
-        task = newTask
+        self.task = newTask
     }
 
-    private func getMusicSongs() async -> [Track] {
-        guard let directory = try? getMusicDir() else { return [] }
+    private func getMusicSongs() async -> [Track]? {
+        let result = await localRepository.fetchTracks()
         
-        do {
-            let files = try FileManager.default.contentsOfDirectory(
-                at: directory,
-                includingPropertiesForKeys: [.creationDateKey],
-                options: .skipsHiddenFiles
-            )
-            let list = files
-                .compactMap { url -> Track? in
-                    if url.pathExtension == Constants.recordingExt {
-                        let attributes = try? FileManager.default.attributesOfItem(atPath: url.path())
-                        let creationDate = attributes?[.creationDate] as? Date ?? Date.now
-                        let fileName = url.lastPathComponent
-                        let components = fileName.split(separator: "_")
-                        let index = components.count > 1 ? Int(components[1]) ?? 0 : 0
-                        if index > maxIndex {
-                            maxIndex = index
-                        }
-                        
-                        return Track(
-                            id: index.description,
-                            name: fileName,
-                            duration: 0,
-                            artistID: "",
-                            artistName: "",
-                            artistIdstr: "",
-                            albumName: "",
-                            albumID: "",
-                            licenseCcurl: "",
-                            position: 0,
-                            releasedate: "",
-                            albumImage: "",
-                            audio: "",
-                            audiodownload: "",
-                            shorturl: "",
-                            shareurl: "",
-                            waveform: [],
-                            image: nil,
-                            musicinfo: "",
-                            localUrl: url
-                        )
-                    } else {
-                        return nil
-                    }
-                }
-                .sorted(by: { $0.name < $1.name })
-            return list
-        } catch {
-            print("RecorderViewModel:\(#function): fetch error = \(error.localizedDescription)")
-            return []
+        switch result {
+        case .success(let tracks):
+            return tracks
+        case .failure(let error):
+            await showError(error)
+            return nil
         }
     }
     
-    // Путь для сохранения аудиофайлов
-    private func getMusicDir() throws -> URL {
-        let fileManager = FileManager.default
-        let directory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
-            .appendingPathComponent(Constants.musicDir, conformingTo: .directory)
-        
-        if !fileManager.fileExists(atPath: directory.path) {
-            try fileManager.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)
+    // MARK: - Set Tracks
+    @MainActor
+    private func setMusicSongs(_ tracks: [Track]) async {
+        self.tracks = tracks
+    }
+    
+    // MARK: - Delete
+    public func delete(_ url: URL?) {
+        guard let url else { return }
+        Task { [weak self] in
+            let result = await self?.localRepository.delete(at: url)
+            
+            switch result {
+            case .success(_):
+                await self?.deleteTrack(url)
+            case .failure(let error):
+                await self?.showError(error)
+            case .none:
+                break
+            }
         }
-        // TODO: оповестить пользователя, что каталог для записей не создан
-        return directory
     }
     
     @MainActor
-    private func setMusicSongs(_ list: [Track]) async {
-        self.tracks = list
+    private func deleteTrack(_ url: URL) async {
+        tracks.removeAll(where: { $0.localUrl == url })
     }
     
-    // MARK: - Operation
-    public func delete(_ url: URL?) {
-        guard let url else { return }
-        
-        do {
-            try FileManager.default.removeItem(at: url)
-            tracks.removeAll(where: { $0.localUrl == url })
-        } catch {
-            print("Error: delete \(error.localizedDescription)")
-        }
-    }
-    
+    // MARK: - Rename
     public func showRename(_ track: Track) {
         isRenameVisible = false
         self.currentTrack = track
@@ -126,32 +89,38 @@ final class MusicListViewModel: ObservableObject {
         guard let currentTrack, !name.isEmpty, currentTrack.name != name else { return }
         
         Task { [weak self] in
-            await self?.renameRecording(currentTrack, to: self?.name)
+            await self?.renameMusicSong(currentTrack, to: self?.name)
         }
     }
     
-    private func renameRecording(_ track: Track, to newName: String?) async {
-        guard let newName else { return }
+    private func renameMusicSong(_ track: Track, to newName: String?) async {
+        guard let newName, let url = track.localUrl else { return }
         
-        if let newUrl = renameFile(at: track.localUrl, to: newName), let index = tracks.firstIndex(of: track) {
-            await MainActor.run { [weak self] in
-                self?.tracks[index] = track.copy(name: newName, url: newUrl)
-            }
+        let result = await localRepository.rename(at: url, to: newName)
+        
+        switch result {
+        case .success(let url):
+            await renameTrack(track.copy(name: newName, url: url))
+        case .failure(let error):
+            await showError(error)
         }
     }
     
-    private func renameFile(at url: URL?, to newName: String) -> URL? {
-        guard let url else { return nil }
+    @MainActor
+    private func renameTrack(_ track: Track) async {
+        guard let index = tracks.firstIndex(where: { $0.id == track.id} ) else { return }
         
-        let newURL = url.deletingLastPathComponent().appendingPathComponent(newName)
-        
-        do {
-            try FileManager.default.moveItem(at: url, to: newURL)
-            return newURL
-        } catch {
-            print("Error renaming file: \(error.localizedDescription)")
-            return nil
-        }
+        tracks[index] = track
     }
-
+    
+    // MARK: - Show Errors
+    @MainActor
+    private func showError(_ error: Error) async {
+        let message = if let error = error as? LocalError {
+            error.localizedDescription
+        } else {
+            error.localizedDescription
+        }
+        print("SearchScreenViewModel: error: \(message)")
+    }
 }
