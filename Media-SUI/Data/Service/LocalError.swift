@@ -10,6 +10,7 @@ import Foundation
 enum LocalError: Error {
     case directoryError(String)
     case saveError(String)
+    case fileError(String)
     
     // MARK: - Description
     var localizedDescription: String {
@@ -18,6 +19,8 @@ enum LocalError: Error {
             String(localized: "Directory error: \(dir)")
         case .saveError(let file):
             String(localized: "File creating error: \(file)")
+        case .fileError(let file):
+            String(localized: "File does not exist: \(file)")
         }
     }
 }
