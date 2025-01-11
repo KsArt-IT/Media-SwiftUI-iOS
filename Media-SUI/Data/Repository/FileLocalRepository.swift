@@ -49,6 +49,20 @@ final class FileLocalRepository: LocalRepository {
         }
     }
     
+    func fetchTrackUrl(by name: String) async -> Result<URL, any Error> {
+        let result = await service.getFileUrl(
+            dir: Constants.musicDir,
+            fileName: "\(name).\(Constants.musicExt)"
+        )
+        
+        return switch result {
+        case .success(let url):
+                .success(url)
+        case .failure(let error):
+                .failure(error)
+        }
+    }
+    
     func saveTrack(name: String, data: Data) async -> Result<URL, any Error> {
         let result = await service.saveFile(
             dir: Constants.musicDir,
