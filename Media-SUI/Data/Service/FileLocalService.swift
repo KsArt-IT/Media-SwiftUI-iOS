@@ -71,22 +71,25 @@ final class FileLocalService: LocalService {
         return .failure(LocalError.directoryError(dir))
     }
     
-    func getFileUrl(dir: String, fileName: String) async -> Result<URL?, any Error> {
+    func getFileUrl(dir: String, fileName: String) async -> Result<URL, any Error> {
         guard let path = getDirectoryUrl(dir) else { return .failure(LocalError.directoryError(dir)) }
-        let fileURL = path.appendingPathComponent(fileName, conformingTo: .fileURL)
-        return .success(manager.fileExists(atPath: fileURL.path()) ? fileURL : nil)
+        return if let (fileURL, isFileExists) = await getFileUrl(path: path, fileName: fileName), isFileExists {
+            .success(fileURL)
+        } else {
+            .failure(LocalError.fileError(fileName))
+        }
     }
     
     func saveFile(dir: String, fileName: String, data: Data) async -> Result<URL, any Error> {
         guard let path = getDirectoryUrl(dir) else { return .failure(LocalError.directoryError(dir)) }
         
-        let fileURL = path.appendingPathComponent(fileName, conformingTo: .fileURL)
         // проверить если файл есть
-        if manager.fileExists(atPath: fileURL.path()) ||
+        return if let (fileURL, isFileExists) = await getFileUrl(path: path, fileName: fileName), isFileExists ||
             manager.createFile(atPath: fileURL.path(),contents: data) {
-            return .success(fileURL)
+            .success(fileURL)
+        } else {
+            .failure(LocalError.saveError(fileName))
         }
-        return .failure(LocalError.saveError(fileURL.absoluteString))
     }
     
     func rename(at url: URL, to name: String) async -> Result<URL, any Error> {
@@ -114,7 +117,6 @@ final class FileLocalService: LocalService {
     }
     
     private func getDirectoryUrl(_ dir: String) -> URL? {
-        
         let directory = manager.urls(for: .documentDirectory, in: .userDomainMask).first!
             .appendingPathComponent(dir, conformingTo: .directory)
         
@@ -128,6 +130,11 @@ final class FileLocalService: LocalService {
         }
         // TODO: оповестить пользователя, что каталог для записей не создан
         return directory
+    }
+    
+    private func getFileUrl(path: URL, fileName: String) async -> (URL, Bool)? {
+        let fileURL = path.appendingPathComponent(fileName, conformingTo: .fileURL)
+        return  (fileURL, manager.fileExists(atPath: fileURL.path()))
     }
     
 }
