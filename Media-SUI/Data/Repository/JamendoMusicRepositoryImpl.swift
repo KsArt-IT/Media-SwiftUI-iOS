@@ -45,11 +45,14 @@ final class JamendoMusicRepositoryImpl: MusicRepository {
     // загрузка файлов по url
     func fetchTrack(url: String) async -> Result<Data, any Error> {
         guard let url = URL(string: url)  else { return .failure(NetworkError.networkError(url)) }
-        
+        print("JamendoMusicRepositoryImpl: \(#function) file: \(url.absoluteString)")
+
         let request = URLRequest(url: url)
         if let data = try? await service.fetchData(for: request) {
+            print("JamendoMusicRepositoryImpl: \(#function) file: \(data)")
             return .success(data)
         }
+        print("JamendoMusicRepositoryImpl: \(#function) error")
         return .failure(NetworkError.networkError(url.absoluteString))
     }
 }
