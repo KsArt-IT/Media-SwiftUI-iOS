@@ -34,7 +34,20 @@
       }
     },
     "Decoding failed with error" : {
-
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ошибка декодирования"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Помилка декодування"
+          }
+        }
+      }
     },
     "Delete" : {
       "localizations" : {
@@ -48,6 +61,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Видалити"
+          }
+        }
+      }
+    },
+    "Directory error: %@" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ошибка каталога: %@"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Помилка каталогу: %@"
           }
         }
       }
@@ -100,11 +129,43 @@
         }
       }
     },
+    "File creating error: %@" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ошибка создания файла: %@"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Помилка створення файлу: %@"
+          }
+        }
+      }
+    },
+    "File does not exist: %@" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Файл не существует: %@"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Файл не існує: %@"
+          }
+        }
+      }
+    },
     "iJustine`s Airpods" : {
-
+      "shouldTranslate" : false
     },
     "KsArT.pro" : {
-
+      "shouldTranslate" : false
     },
     "Music player" : {
       "localizations" : {
@@ -139,7 +200,20 @@
       }
     },
     "Network error occurred" : {
-
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Произошла ошибка сети"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сталася помилка мережі"
+          }
+        }
+      }
     },
     "№ %lld %@" : {
       "localizations" : {
@@ -252,10 +326,36 @@
       }
     },
     "The request is invalid." : {
-
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Запрос недействителен."
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Запит недійсний."
+          }
+        }
+      }
     },
     "The response is invalid, code" : {
-
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ответ недействителен, код"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Відповідь недійсна, код"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
