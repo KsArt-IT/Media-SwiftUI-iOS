@@ -42,7 +42,7 @@ struct PlayerScreenModifier: ViewModifier {
 
 // Расширение для удобного использования модификатора
 extension View {
-    func musicPlayer(
+    func musicPlayerUI(
         expand: Binding<Bool>,
         animation: Namespace.ID,
         state: TrackState?,

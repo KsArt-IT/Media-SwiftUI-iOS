@@ -34,7 +34,7 @@ struct ContentView: View {
         .onChange(of: selectedTrack) {
             viewModel.start(selectedTrack)
         }
-        .musicPlayer(
+        .musicPlayerUI(
             expand: $expandSheet,
             animation: animation,
             state: viewModel.state,
