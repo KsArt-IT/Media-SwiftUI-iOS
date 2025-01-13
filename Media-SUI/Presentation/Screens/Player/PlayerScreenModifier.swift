@@ -9,10 +9,10 @@ import SwiftUI
 
 // Модификатор для отображения музыкального плеера
 struct PlayerScreenModifier: ViewModifier {
-    @StateObject var viewModel: PlayerViewModel
     @Binding var expand: Bool
     var animation: Namespace.ID
-    @Binding var selected: Track?
+    let state: TrackState?
+    let action: (PlayerAction) -> Void
     
     func body(content: Content) -> some View {
         content
@@ -21,8 +21,8 @@ struct PlayerScreenModifier: ViewModifier {
                 CustomBottomSheet(
                     expand: $expand,
                     animation: animation,
-                    state: viewModel.state,
-                    action: viewModel.player
+                    state: state,
+                    action: action
                 )
             }
             .overlay {
@@ -31,14 +31,11 @@ struct PlayerScreenModifier: ViewModifier {
                     ExpandedBottomSheet(
                         expand: $expand,
                         animation: animation,
-                        state: viewModel.state,
-                        action: viewModel.player
+                        state: state,
+                        action: action
                     )
-                        .transition(.asymmetric(insertion: .identity, removal: .offset(y: -5)))
+                    .transition(.asymmetric(insertion: .identity, removal: .offset(y: -5)))
                 }
-            }
-            .onChange(of: selected) {
-                viewModel.start(selected)
             }
     }
 }
@@ -46,17 +43,17 @@ struct PlayerScreenModifier: ViewModifier {
 // Расширение для удобного использования модификатора
 extension View {
     func musicPlayer(
-        viewModel: PlayerViewModel,
         expand: Binding<Bool>,
         animation: Namespace.ID,
-        selected: Binding<Track?>
+        state: TrackState?,
+        action: @escaping (PlayerAction) -> Void
     ) -> some View {
         self.modifier(
             PlayerScreenModifier(
-                viewModel: viewModel,
                 expand: expand,
                 animation: animation,
-                selected: selected
+                state: state,
+                action: action
             )
         )
     }
