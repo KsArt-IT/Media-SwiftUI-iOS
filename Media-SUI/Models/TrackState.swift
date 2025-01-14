@@ -16,3 +16,17 @@ struct TrackState {
     let image: Data?
     let isPlaying: Bool
 }
+
+extension TrackState {
+    func copy(currentTime: Int, isPlaying: Bool? = nil) -> Self {
+        TrackState(
+            id: self.id,
+            name: self.name,
+            currentTime: currentTime,
+            duration: self.duration,
+            artistName: self.artistName,
+            image: self.image,
+            isPlaying: isPlaying ?? self.isPlaying
+        )
+    }
+}
