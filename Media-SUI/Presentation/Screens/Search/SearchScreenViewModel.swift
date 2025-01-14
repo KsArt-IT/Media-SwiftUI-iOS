@@ -139,6 +139,7 @@ final class SearchScreenViewModel: ObservableObject {
         print("SearchScreenViewModel: \(#function) file: \(track.localUrl?.absoluteString ?? "")")
         guard let index = self.tracks.firstIndex(where: { $0.id == track.id }) else { return }
         self.tracks[index] = track
+        self.currentTrack = track
     }
     
     // MARK: - Set State
