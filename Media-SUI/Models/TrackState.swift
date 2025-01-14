@@ -14,4 +14,5 @@ struct TrackState {
     let duration: Int
     let artistName: String
     let image: Data?
+    let isPlaying: Bool
 }
