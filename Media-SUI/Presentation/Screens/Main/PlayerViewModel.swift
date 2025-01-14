@@ -16,14 +16,15 @@ final class PlayerViewModel: NSObject, ObservableObject {
     private var currentPlaying: URL?
     private var currentTime: Int = 0
     
+    // MARK: - Player Commands
     public func player(of action: PlayerAction) {
         switch action {
         case .start(let track):
             self.start(track)
         case .play:
             self.play()
-        case .pause:
-            self.pause()
+        case .pauseOrPlay:
+            self.pauseOrPlay()
         case .stop:
             self.stop()
         case .backward:
@@ -34,68 +35,91 @@ final class PlayerViewModel: NSObject, ObservableObject {
     }
     
     public func start(_ track: Track?) {
+        print("PlayerViewModel:\(#function)")
         self.stop()
         guard let track else { return }
         
         self.track = track
-        // загрузить и включить плеер
-        self.downloadAndPlay()
-    }
-    
-    private func downloadAndPlay() {
-        
+        // включить плеер
+        self.play()
     }
     
     private func play() {
-        guard let track, let url = URL(string: track.audiodownload) else { return }
+        guard let track, let url = track.localUrl else { return }
         
         do {
-            currentPlaying = url
-            print("play: \(url)")
+            self.currentPlaying = url
+            self.currentTime = 0
+            print("PlayerViewModel:\(#function): play: \(url)")
             audioPlayer = try getPlayer(url)
-            state = TrackState(
-                id: track.id,
-                name: track.name,
-                currentTime: self.currentTime,
-                duration: track.duration,
-                artistName: track.artistName,
-                image: track.image
+            setState(
+                currentTime: Int(self.audioPlayer?.currentTime.binade ?? 0),
+                duration: self.audioPlayer?.duration.exponent ?? 0,
+                playing: true
             )
             audioPlayer?.play()
         } catch {
-            print("Error: play \(error.localizedDescription)")
+            print("PlayerViewModel:\(#function): error play: \(error.localizedDescription)")
         }
     }
     
-    private func pause() {
-        audioPlayer?.pause()
+    private func pauseOrPlay() {
+        guard audioPlayer != nil else { return }
+        
+        if audioPlayer?.isPlaying == true {
+            audioPlayer?.pause()
+        } else {
+            audioPlayer?.play()
+        }
+        updateState(Int(audioPlayer?.currentTime.binade ?? 0), playing: audioPlayer?.isPlaying)
     }
     
     private func stop() {
+        print("PlayerViewModel:\(#function)")
         audioPlayer?.stop()
         audioPlayer = nil
         currentPlaying = nil
         state = nil
     }
     
+    // MARK: - Player
     private func getPlayer(_ url: URL) throws -> AVAudioPlayer {
         let player = try AVAudioPlayer(contentsOf: url)
         player.delegate = self
         return player
     }
+    
+    // MARK: - State
+    private func setState(currentTime: Int, duration: Int, playing: Bool) {
+        guard let track else {
+            self.state = nil
+            return
+        }
+        
+        self.state = TrackState(
+            id: track.id,
+            name: track.name,
+            currentTime: currentTime,
+            duration: duration,
+            artistName: track.artistName,
+            image: track.image,
+            isPlaying: playing
+        )
+    }
+    
+    private func updateState(_ currentTime: Int, playing: Bool? = nil) {
+        guard state != nil else { return }
+        
+        self.state = self.state?.copy(
+            currentTime: currentTime,
+            isPlaying: playing
+        )
+    }
 }
 
+// MARK: - Player Delegate
 extension PlayerViewModel: AVAudioPlayerDelegate {
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         self.stop()
     }
-}
-
-enum PlayerAction {
-    case start(_ track: Track?)
-    case play
-    case pause
-    case stop
-    case backward
-    case forward
 }
