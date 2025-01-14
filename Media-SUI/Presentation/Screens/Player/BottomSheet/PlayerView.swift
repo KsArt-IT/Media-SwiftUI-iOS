@@ -82,9 +82,9 @@ struct PlayerView: View {
                     
                     // Making Play/Pause Little Bigger
                     Button {
-                        action(.pause)
+                        action(.pauseOrPlay)
                     } label: {
-                        Image(systemName: "pause.fill")
+                        Image(systemName: state?.isPlaying == true ? "pause.circle" : "play.circle")
                         // Dynamic Sizing for Smaller to Large iPhone
                             .font(size.height < 300 ? .largeTitle : .system(size: 50))
                     }

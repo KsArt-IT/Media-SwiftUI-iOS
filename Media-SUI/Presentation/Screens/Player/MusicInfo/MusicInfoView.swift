@@ -12,7 +12,7 @@ struct MusicInfoView: View {
     var animation: Namespace.ID
     let state: TrackState?
     let action: (PlayerAction) -> Void
-
+    
     var body: some View {
         HStack(spacing: 0) {
             // Adding Matched Geometry Effect (Hero Animation)
@@ -44,9 +44,9 @@ struct MusicInfoView: View {
             Spacer(minLength: 0)
             
             Button {
-                action(.pause)
+                action(.pauseOrPlay)
             } label: {
-                Image(systemName: "pause.fill")
+                Image(systemName: state?.isPlaying == true ? "pause.fill" : "play.fill")
                     .font(.title2)
             }
             .padding(.trailing, Constants.small)
@@ -72,5 +72,5 @@ struct MusicInfoView: View {
 }
 
 #Preview {
-//    MusicInfoView()
+    //    MusicInfoView()
 }
