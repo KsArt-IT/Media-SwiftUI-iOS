@@ -13,6 +13,7 @@ struct TrackView: View {
     var body: some View {
         HStack {
             ImageDataView(data: track.image)
+                .frame(width: Constants.smalImage, height: Constants.smalImage)
             VStack {
                 Text(track.name)
                     .font(.title)

@@ -27,7 +27,6 @@ struct ImageDataView: View {
                     .clipped()
             }
         }
-        .frame(width: Constants.smalImage, height: Constants.smalImage)
     }
 }
 
