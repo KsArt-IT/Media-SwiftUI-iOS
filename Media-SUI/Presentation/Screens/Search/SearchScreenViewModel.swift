@@ -75,7 +75,7 @@ final class SearchScreenViewModel: ObservableObject {
         return switch result {
         case .success(let url):
             url
-        case .failure(let error):
+        case .failure(_):
             nil
         }
     }
