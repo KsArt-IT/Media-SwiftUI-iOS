@@ -121,5 +121,6 @@ final class PlayerViewModel: NSObject, ObservableObject {
 extension PlayerViewModel: AVAudioPlayerDelegate {
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         self.stop()
+        NotificationCenter.default.post(name: .playbackFinished, object: nil)
     }
 }

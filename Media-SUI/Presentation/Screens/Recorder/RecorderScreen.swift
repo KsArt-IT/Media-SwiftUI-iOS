@@ -9,6 +9,7 @@ import SwiftUI
 
 struct RecorderScreen: View {
     @StateObject var viewModel: RecorderViewModel
+    @Binding var selected: Track?
     
     var body: some View {
         VStack {
@@ -17,7 +18,7 @@ struct RecorderScreen: View {
             List(viewModel.recordings) { recording in
                 RecordingView(
                     recording: recording,
-                    playing: $viewModel.currentPlaying
+                    playing: viewModel.isSelected(recording.url)
                 )
                 .swipeActions(edge: .trailing) {
                     Button {
@@ -38,7 +39,7 @@ struct RecorderScreen: View {
                     .tint(.blue)
                 }
                 .onTapGesture {
-                    viewModel.playOrStop(recording.url)
+                    viewModel.select(recording)
                 }
             }
             .listStyle(.plain)
@@ -71,16 +72,18 @@ struct RecorderScreen: View {
         .alertRename(isPresented: $viewModel.isRenameVisible, name: $viewModel.name) {
             viewModel.rename()
         }
-        
+        .onChange(of: viewModel.currentTrack) { _, newValue in
+            selected = newValue
+        }
         .onAppear {
             viewModel.fetchRecordings()
         }
         .onReceive(NotificationCenter.default.publisher(for: .playbackFinished)) { _ in
-            viewModel.stop()
+            viewModel.cancelSelection()
         }
     }
 }
 
 #Preview {
-//    RecorderScreen(viewModel: RecorderViewModel())
+    //    RecorderScreen(viewModel: RecorderViewModel())
 }

@@ -26,7 +26,7 @@ struct ContentView: View {
         TabView(selection: $selectedTab) {
             MusicListScreen(viewModel: di.resolve(), selected: $selectedTrack)
                 .tabMenu(Tab.player, icon: "play.square")
-            RecorderScreen(viewModel: di.resolve())
+            RecorderScreen(viewModel: di.resolve(), selected: $selectedTrack)
                 .tabMenu(Tab.recorder, icon: "mic.square")
             SearchScreen(viewModel: di.resolve(), selected: $selectedTrack)
                 .tabMenu(Tab.search, icon: "mail.and.text.magnifyingglass")

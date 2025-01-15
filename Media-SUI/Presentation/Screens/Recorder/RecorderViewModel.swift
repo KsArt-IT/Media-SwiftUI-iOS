@@ -20,14 +20,13 @@ final class RecorderViewModel: NSObject, ObservableObject {
     @Published var isRecording = false
     @Published var isRecordingButtonDisabled = false
     
-    private var audioPlayer: AVAudioPlayer?
-    @Published var currentPlaying: URL?
     private var task: Task<(), Never>?
-    private var maxIndex = 0
     
     @Published var isRenameVisible = false
     @Published var name = ""
     private var recording: Recording?
+    
+    @Published var currentTrack: Track?
     
     init(repository: LocalRepository) {
         self.repository = repository
@@ -78,7 +77,7 @@ final class RecorderViewModel: NSObject, ObservableObject {
     }
     
     private func startRecording() async {
-//        print("RecorderViewModel:\(#function)")
+        //        print("RecorderViewModel:\(#function)")
         do {
             audioRecorder = try await getRecorder()
             audioRecorder?.record() // start
@@ -113,7 +112,7 @@ final class RecorderViewModel: NSObject, ObservableObject {
         let session = AVAudioSession.sharedInstance()
         try session.setCategory(.playAndRecord, mode: .default, options: .defaultToSpeaker)
         try session.setActive(true)
-
+        
         let recorder = try AVAudioRecorder(
             url: url,
             settings: getSettingsRecording()
@@ -127,11 +126,11 @@ final class RecorderViewModel: NSObject, ObservableObject {
     private func getNextRecordingUrl() async -> URL? {
         let result = await repository.getNextRecordingUrl()
         
-        switch result {
+        return switch result {
         case .success(let url):
-            return url
-        case .failure(let failure):
-            return nil
+            url
+        case .failure(let error):
+            nil
         }
     }
     
@@ -191,39 +190,46 @@ final class RecorderViewModel: NSObject, ObservableObject {
         }
     }
     
-    // MARK: - Player
-    public func playOrStop(_ url: URL) {
-        if url == currentPlaying {
-            stop()
-        } else {
-            play(url: url)
+    // MARK: - Playing
+    public func select(_ track: Recording) {
+        if let localUrl = currentTrack?.localUrl, localUrl == track.url {
+            return
         }
+        
+        currentTrack = Track(
+            id: track.id.absoluteString,
+            name: track.name,
+            duration: 0,
+            artistID: "",
+            artistName: "",
+            artistIdstr: "",
+            albumName: "",
+            albumID: "",
+            licenseCcurl: "",
+            position: 0,
+            releasedate: "",
+            albumImage: "",
+            audio: "",
+            audiodownload: "",
+            shorturl: "",
+            shareurl: "",
+            waveform: [],
+            image: nil,
+            musicinfo: "",
+            localUrl: track.url
+        )
+    }
+
+    public func cancelSelection() {
+        currentTrack = nil
     }
     
-    private func play(url: URL) {
-        stop()
-        do {
-            currentPlaying = url
-            audioPlayer = try getPlayer(url)
-            audioPlayer?.play()
-        } catch {
-            print("Error: play \(error.localizedDescription)")
-        }
+    public func isSelected(_ url: URL) -> Bool {
+        guard let localUrl = currentTrack?.localUrl else { return false }
+        return localUrl == url
     }
     
-    public func stop() {
-        audioPlayer?.stop()
-        audioPlayer = nil
-        currentPlaying = nil
-    }
-    
-    private func getPlayer(_ url: URL) throws -> AVAudioPlayer {
-        let player = try AVAudioPlayer(contentsOf: url)
-        player.delegate = self
-        return player
-    }
-    
-    // MARK: - Operation
+    // MARK: - Delete
     public func delete(_ url: URL) {
         Task { [weak self] in
             let result = await self?.repository.delete(at: url)
@@ -239,6 +245,7 @@ final class RecorderViewModel: NSObject, ObservableObject {
         }
     }
     
+    // MARK: - Rename
     public func showRename(_ recording: Recording) {
         isRenameVisible = false
         self.recording = recording
@@ -249,7 +256,7 @@ final class RecorderViewModel: NSObject, ObservableObject {
     public func rename() {
         Task { [weak self] in
             guard let recording = self?.recording, let name = self?.name, !name.isEmpty, recording.name != name else { return }
-
+            
             let result = await self?.repository.rename(at: recording.url, to: name)
             
             switch result {
@@ -275,13 +282,6 @@ final class RecorderViewModel: NSObject, ObservableObject {
         }
     }
     
-}
-
-// MARK: - PlayerDelegate
-extension RecorderViewModel: AVAudioPlayerDelegate {
-    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-        NotificationCenter.default.post(name: .playbackFinished, object: nil)
-    }
 }
 
 // MARK: - RecorderDelegate
