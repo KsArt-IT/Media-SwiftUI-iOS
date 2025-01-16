@@ -27,9 +27,10 @@ struct Track: Identifiable, Hashable {
     let waveform: [Int]
     let image: Data?
     let musicinfo: String
-    let localUrl: URL?
+    let imageUrl: URL?
+    let songUrl: URL?
     
-    public func copy(name: String, url: URL) -> Self {
+    public func copy(name: String, imageUrl: URL? = nil, songUrl: URL? = nil) -> Self {
         Track(
             id: self.id,
             name: name,
@@ -50,7 +51,8 @@ struct Track: Identifiable, Hashable {
             waveform: self.waveform,
             image: self.image,
             musicinfo: self.musicinfo,
-            localUrl: url
+            imageUrl: imageUrl ?? self.imageUrl,
+            songUrl: songUrl ?? self.songUrl
         )
     }
 }

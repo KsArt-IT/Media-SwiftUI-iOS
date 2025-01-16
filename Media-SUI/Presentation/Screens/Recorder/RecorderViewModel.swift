@@ -192,7 +192,7 @@ final class RecorderViewModel: NSObject, ObservableObject {
     
     // MARK: - Playing
     public func select(_ track: Recording) {
-        if let localUrl = currentTrack?.localUrl, localUrl == track.url {
+        if let songUrl = currentTrack?.songUrl, songUrl == track.url {
             return
         }
         
@@ -216,17 +216,17 @@ final class RecorderViewModel: NSObject, ObservableObject {
             waveform: [],
             image: nil,
             musicinfo: "",
-            localUrl: track.url
+            imageUrl: nil,
+            songUrl: track.url
         )
     }
-
+    
     public func cancelSelection() {
         currentTrack = nil
     }
     
     public func isSelected(_ url: URL) -> Bool {
-        guard let localUrl = currentTrack?.localUrl else { return false }
-        return localUrl == url
+        currentTrack?.songUrl != nil && currentTrack?.songUrl == url
     }
     
     // MARK: - Delete

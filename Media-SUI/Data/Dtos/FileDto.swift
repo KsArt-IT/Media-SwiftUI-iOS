@@ -48,7 +48,8 @@ extension FileDto {
             waveform: [],
             image: nil,
             musicinfo: "",
-            localUrl: self.url
+            imageUrl: nil,
+            songUrl: self.url
         )
     }
 }

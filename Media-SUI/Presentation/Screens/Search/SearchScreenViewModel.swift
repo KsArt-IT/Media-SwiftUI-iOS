@@ -26,12 +26,13 @@ final class SearchScreenViewModel: ObservableObject {
     
     // MARK: - Download
     public func download(_ track: Track) {
-        guard taskDownload == nil, track.localUrl == nil else { return }
+        guard taskDownload == nil, track.songUrl == nil else { return }
         
         let task = Task { [weak self] in
             print("SearchScreenViewModel: \(#function) file: \(track.name)")
             await self?.setState(.loading)
             // проверить, может файл уже был загружен
+//            let fileUrl = await self?.downloadAndSaveSong(track)
             let fileUrl: URL?
             if let url = await self?.getFileLocalUrl(track) {
                 fileUrl = url
@@ -46,7 +47,12 @@ final class SearchScreenViewModel: ObservableObject {
             }
             if let fileUrl {
                 // обновим ссылку на файл
-                await self?.setTrack(track.copy(name: fileUrl.lastPathComponent, url: fileUrl))
+                let track = track.copy(
+                    name: fileUrl.lastPathComponent,
+                    imageUrl: fileUrl,
+                    songUrl: fileUrl
+                )
+                await self?.setTrack(track)
             }
             await self?.setState(.reload)
 
@@ -67,6 +73,10 @@ final class SearchScreenViewModel: ObservableObject {
             nil
         }
     }
+    
+//    private func downloadAndSaveSong(_ track: Track) async -> URL? {
+//        // проверить есть ли данные в DB и взять от туда информацию
+//    }
     
     private func saveTrack(name: String, data: Data) async -> URL? {
         let result = await localRepository.saveTrack(name: name, data: data)
@@ -136,7 +146,7 @@ final class SearchScreenViewModel: ObservableObject {
     
     @MainActor
     private func setTrack(_ track: Track) async {
-        print("SearchScreenViewModel: \(#function) file: \(track.localUrl?.absoluteString ?? "")")
+        print("SearchScreenViewModel: \(#function) file: \(track.songUrl?.absoluteString ?? "")")
         guard let index = self.tracks.firstIndex(where: { $0.id == track.id }) else { return }
         self.tracks[index] = track
         self.currentTrack = track

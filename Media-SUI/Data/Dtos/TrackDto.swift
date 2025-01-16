@@ -53,7 +53,8 @@ extension TrackDto {
             waveform: [],
             image: data,
             musicinfo: self.musicinfo?.gender ?? "",
-            localUrl: nil
+            imageUrl: nil,
+            songUrl: nil
         )
     }
 }

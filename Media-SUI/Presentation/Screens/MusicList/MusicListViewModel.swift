@@ -74,7 +74,7 @@ final class MusicListViewModel: ObservableObject {
     
     @MainActor
     private func deleteTrack(_ url: URL) async {
-        tracks.removeAll(where: { $0.localUrl == url })
+        tracks.removeAll(where: { $0.songUrl == url })
     }
     
     // MARK: - Rename
@@ -94,13 +94,13 @@ final class MusicListViewModel: ObservableObject {
     }
     
     private func renameMusicSong(_ track: Track, to newName: String?) async {
-        guard let newName, let url = track.localUrl else { return }
+        guard let newName, let url = track.songUrl else { return }
         
         let result = await localRepository.rename(at: url, to: newName)
         
         switch result {
         case .success(let url):
-            await renameTrack(track.copy(name: newName, url: url))
+            await renameTrack(track.copy(name: newName, songUrl: url))
         case .failure(let error):
             await showError(error)
         }

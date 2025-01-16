@@ -52,7 +52,8 @@ struct TrackView: View {
             waveform: [],
             image: nil,
             musicinfo: "",
-            localUrl: nil
+            imageUrl: nil,
+            songUrl: nil
         )
     )
 }

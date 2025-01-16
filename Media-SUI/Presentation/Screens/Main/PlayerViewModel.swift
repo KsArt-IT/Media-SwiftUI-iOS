@@ -45,7 +45,7 @@ final class PlayerViewModel: NSObject, ObservableObject {
     }
     
     private func play() {
-        guard let track, let url = track.localUrl else { return }
+        guard let track, let url = track.songUrl else { return }
         
         do {
             self.currentPlaying = url
