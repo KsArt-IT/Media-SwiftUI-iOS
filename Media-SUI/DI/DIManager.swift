@@ -13,12 +13,26 @@ final class DIManager {
     
     // MARK: - Registering dependencies
     init() {
+        registerDataRepository()
+        
         registerRepository()
         registerLocalRepository()
+        
         registerRecorderViewModel()
         registerSearchScreenViewModel()
         registerPlayerViewModel()
         registerMusicListViewModel()
+    }
+    
+    // MARK: DataBase
+    private func registerDataRepository() {
+        container.register(DataBase.self) { _ in
+            DataBase()
+        }.inObjectScope(.weak)
+
+        container.register(DataService.self) { c in
+            DataLocalServiceImpl(db: c.resolve(DataBase.self)!)
+        }.inObjectScope(.container)
     }
     
     // MARK: Repository
@@ -38,7 +52,10 @@ final class DIManager {
         }.inObjectScope(.weak)
         
         container.register(LocalRepository.self) { c in
-            FileLocalRepository(service: c.resolve(LocalService.self)!)
+            FileLocalRepository(
+                service: c.resolve(LocalService.self)!,
+                dataService: c.resolve(DataService.self)!
+            )
         }.inObjectScope(.container)
     }
     
