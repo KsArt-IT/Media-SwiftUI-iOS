@@ -24,47 +24,78 @@ final class SearchScreenViewModel: ObservableObject {
         self.localRepository = localRepository
     }
     
-    // MARK: - Download
+    // MARK: - Track get and set
     public func download(_ track: Track) {
         guard taskDownload == nil, track.songUrl == nil else { return }
         
         let task = Task { [weak self] in
             print("SearchScreenViewModel: \(#function) file: \(track.name)")
             await self?.setState(.loading)
-            // проверить, может файл уже был загружен
-//            let fileUrl = await self?.downloadAndSaveSong(track)
-            let fileUrl: URL?
-            if let url = await self?.getFileLocalUrl(track) {
-                fileUrl = url
-            } else {
-                // загружаем
-                if let data = await self?.downloadTrack(track),
-                   let url = await self?.saveTrack(name: track.name, data: data) {
-                    fileUrl = url
-                } else {
-                    fileUrl = nil
-                }
-            }
-            if let fileUrl {
-                // обновим ссылку на файл
-                let track = track.copy(
-                    name: fileUrl.lastPathComponent,
-                    imageUrl: fileUrl,
-                    songUrl: fileUrl
-                )
+            // проверить, может файл уже был загружен или загрузить
+            if let track = await self?.downloadAndSaveSong(track) {
+                // обновить список и запустить плеер с выбранным треком
                 await self?.setTrack(track)
             }
             await self?.setState(.reload)
-
+            
             self?.taskDownload = nil
         }
         self.taskDownload = task
     }
     
     // MARK: - Local Tracks URL
-    private func getFileLocalUrl(_ track: Track) async -> URL? {
+    private func downloadAndSaveSong(_ track: Track) async -> Track? {
+        // проверить есть ли данные в DB и взять от туда информацию
+        if let trackLocal = await getTrackLocal(track) {
+            return trackLocal
+        }
+        // скачиваем из интернета misic file
+        if let data = await downloadTrack(track) {
+            // сохраняем трек в локальную папку
+            let songUrl = await saveFileLocal(
+                dir: Constants.musicDir,
+                name: "\(track.name).\(Constants.musicExt)",
+                data: data
+            )
+            print("SearchScreenViewModel: \(#function) songUrl: \(String(describing: songUrl))")
+            // сохраняем картинку в локальную папку
+            let imageUrl = await saveFileLocal(
+                dir: Constants.imageDir,
+                name: "\(track.name).\(Constants.imageExt)",
+                data: track.image
+            )
+            print("SearchScreenViewModel: \(#function) imageUrl: \(String(describing: imageUrl))")
+            // обновляем ссылки на локальные картинку и файл mp3
+            let track = track.copy(imageUrl: imageUrl, songUrl: songUrl)
+            // сохраняем в базу данные трека
+            await saveTrack(track)
+            return track
+        }
+        return nil
+    }
+    
+    private func getTrackLocal(_ track: Track) async -> Track? {
         print("SearchScreenViewModel: \(#function) file: \(track.name)")
-        let result = await localRepository.fetchTrackUrl(by: track.name)
+        let result = await localRepository.fetchData(id: track.id)
+        
+        return switch result {
+        case .success(let track):
+            // проверим наличие локального файла
+            if await localRepository.isFileExists(fileUrl: track.songUrl) {
+                track.clearUrl()
+            } else {
+                track
+            }
+        case .failure(_):
+            nil
+        }
+    }
+    
+    private func saveFileLocal(dir: String, name: String, data: Data?) async -> URL? {
+        guard let data else { return nil }
+        
+        let result = await localRepository.saveFile(dir: dir, name: name, data: data)
+        print("SearchScreenViewModel: \(#function)")
         
         return switch result {
         case .success(let url):
@@ -74,19 +105,15 @@ final class SearchScreenViewModel: ObservableObject {
         }
     }
     
-//    private func downloadAndSaveSong(_ track: Track) async -> URL? {
-//        // проверить есть ли данные в DB и взять от туда информацию
-//    }
-    
-    private func saveTrack(name: String, data: Data) async -> URL? {
-        let result = await localRepository.saveTrack(name: name, data: data)
+    private func saveTrack(_ track: Track) async {
+        let result = await localRepository.saveData(track: track)
         print("SearchScreenViewModel: \(#function)")
-
-        return switch result {
-        case .success(let url):
-            url
-        case .failure(_):
-            nil
+        
+        switch result {
+        case .success(_):
+            break
+        case .failure(let error):
+            await showError(error)
         }
     }
     
