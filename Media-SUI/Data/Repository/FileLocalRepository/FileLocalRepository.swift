@@ -9,18 +9,21 @@ import Foundation
 
 final class FileLocalRepository: LocalRepository {
     private let service: LocalService
+    private let dataService: DataService
     
-    init(service: LocalService) {
+    init(service: LocalService, dataService: DataService) {
         self.service = service
+        self.dataService = dataService
     }
     
+    // MARK: - Recorders
     func fetchRecorders() async -> Result<[Recording], any Error> {
         let result = await service.fetchFiles(dir: Constants.recordingDir, ext: Constants.recordingExt, sortByName: false)
-        switch result {
+        return switch result {
         case .success(let recordings):
-            return .success(recordings.map { $0.toRecording() })
+                .success(recordings.map { $0.toRecording() })
         case .failure(let error):
-            return .failure(error)
+                .failure(error)
         }
     }
     
@@ -31,29 +34,43 @@ final class FileLocalRepository: LocalRepository {
             prefix: Constants.recordingPrefix
         )
         
-        switch result {
+        return switch result {
         case .success(let url):
-            return .success(url)
+                .success(url)
         case .failure(let error):
-            return .failure(error)
-        }
-    }
-
-    func fetchTracks() async -> Result<[Track], any Error> {
-        let result = await service.fetchFiles(dir: Constants.musicDir, ext: Constants.musicExt, sortByName: false)
-        switch result {
-        case .success(let recordings):
-            return .success(recordings.map { $0.toTrack() })
-        case .failure(let error):
-            return .failure(error)
+                .failure(error)
         }
     }
     
-    func fetchTrackUrl(by name: String) async -> Result<URL, any Error> {
-        let result = await service.getFileUrl(
-            dir: Constants.musicDir,
-            fileName: "\(name).\(Constants.musicExt)"
+    // MARK: - Files
+    func isFileExists(fileUrl: URL?)  async -> Bool {
+        await service.isFileExists(fileUrl: fileUrl)
+    }
+    
+    private func fetchFile(fileUrl: URL?) async -> Data? {
+        if let fileUrl, case .success(let data) = await service.fetchFile(fileUrl: fileUrl) {
+            data
+        } else {
+            nil
+        }
+    }
+    
+    func saveFile(dir: String, name: String, data: Data) async -> Result<URL, any Error> {
+        let result = await service.saveFile(
+            dir: dir,
+            fileName: name,
+            data: data
         )
+        return switch result {
+        case .success(let url):
+                .success(url)
+        case .failure(let error):
+                .failure(error)
+        }
+    }
+    
+    func rename(at url: URL, to name: String) async -> Result<URL, any Error> {
+        let result = await service.rename(at: url, to: name)
         
         return switch result {
         case .success(let url):
@@ -63,40 +80,53 @@ final class FileLocalRepository: LocalRepository {
         }
     }
     
-    func saveTrack(name: String, data: Data) async -> Result<URL, any Error> {
-        let result = await service.saveFile(
-            dir: Constants.musicDir,
-            fileName: "\(name).\(Constants.musicExt)",
-            data: data
-        )
-        switch result {
-        case .success(let url):
-            return .success(url)
-        case .failure(let error):
-            return .failure(error)
-        }
-    }
-    
-    func rename(at url: URL, to name: String) async -> Result<URL, any Error> {
-        let result = await service.rename(at: url, to: name)
-        
-        switch result {
-        case .success(let url):
-            return .success(url)
-        case .failure(let error):
-            return .failure(error)
-        }
-    }
-    
     func delete(at url: URL) async -> Result<Bool, any Error> {
         let result = await service.delete(at: url)
         
-        switch result {
+        return switch result {
         case .success(_):
-            return .success(true)
+                .success(true)
+        case .failure(let error):
+                .failure(error)
+        }
+    }
+    
+    // MARK: - Database
+    func fetchData() async -> Result<[Track], any Error> {
+        let result = await dataService.fetchData()
+        
+        switch result {
+        case .success(let tracksModel):
+            var tracks: [Track] = []
+            for trackModel in tracksModel {
+                let image = await fetchFile(fileUrl: trackModel.imageUrl)
+                tracks.append(trackModel.toTrack(image: image))
+            }
+            return .success(tracks)
         case .failure(let error):
             return .failure(error)
         }
     }
     
+    func fetchData(id: String) async -> Result<Track, any Error> {
+        let result = await dataService.fetchData(id: id)
+        
+        return switch result {
+        case .success(let trackModel):
+                .success(trackModel.toTrack(image: await fetchFile(fileUrl: trackModel.imageUrl)))
+        case .failure(let error):
+                .failure(error)
+        }
+    }
+    
+    func saveData(track: Track) async -> Result<Bool, any Error> {
+        let result = await dataService.saveData(track: track.toModel())
+        
+        return switch result {
+        case .success(_):
+                .success(true)
+        case .failure(let error):
+                .failure(error)
+        }
+    }
 }
