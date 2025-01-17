@@ -23,6 +23,9 @@ enum Constants {
     static let musicDir = "MusicCenter"
     static let musicExt = "mp3"
 
+    static let imageDir = "MusicCenter"
+    static let imageExt = "jpeg"
+
     static let recordingDir = "RecordingMusicCenter"
     static let recordingExt = "m4a"
     static let recordingPrefix = "Recording"
