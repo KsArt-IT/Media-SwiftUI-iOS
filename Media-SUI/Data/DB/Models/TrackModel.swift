@@ -10,6 +10,7 @@ import SwiftData
 
 @Model
 final class TrackModel {
+    @Attribute(.unique)
     var id: String
     var name: String
     var duration: Int
@@ -27,10 +28,10 @@ final class TrackModel {
     var shorturl: String
     var shareurl: String
     var waveform: [Int]
-    var imageURL: URL? // URL на файл картинку
+    var imageUrl: URL? // URL на файл картинку
     var musicinfo: String
-    var localUrl: URL? // URL на файл mp3
-
+    var songUrl: URL? // URL на файл mp3
+    
     init(
         id: String,
         name: String,
@@ -49,9 +50,9 @@ final class TrackModel {
         shorturl: String,
         shareurl: String,
         waveform: [Int],
-        imageURL: URL?,
+        imageUrl: URL?,
         musicinfo: String,
-        localUrl: URL?
+        songUrl: URL?
     ) {
         self.id = id
         self.name = name
@@ -70,8 +71,36 @@ final class TrackModel {
         self.shorturl = shorturl
         self.shareurl = shareurl
         self.waveform = waveform
-        self.imageURL = imageURL
+        self.imageUrl = imageUrl
         self.musicinfo = musicinfo
-        self.localUrl = localUrl
+        self.songUrl = songUrl
+    }
+}
+
+extension TrackModel {
+    func toTrack(image: Data? = nil) -> Track {
+        Track(
+            id: self.id,
+            name: self.name,
+            duration: self.duration,
+            artistID: self.artistID,
+            artistName: self.artistName,
+            artistIdstr: self.artistIdstr,
+            albumName: self.albumName,
+            albumID: self.albumID,
+            licenseCcurl: self.licenseCcurl,
+            position: self.position,
+            releasedate: self.releasedate,
+            albumImage: self.albumImage,
+            audio: self.audio,
+            audiodownload: self.audiodownload,
+            shorturl: self.shorturl,
+            shareurl: self.shareurl,
+            waveform: self.waveform,
+            image: image,
+            musicinfo: self.musicinfo,
+            imageUrl: self.imageUrl,
+            songUrl: self.songUrl
+        )
     }
 }
