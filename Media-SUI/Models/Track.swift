@@ -30,10 +30,41 @@ struct Track: Identifiable, Hashable {
     let imageUrl: URL?
     let songUrl: URL?
     
-    public func copy(name: String, imageUrl: URL? = nil, songUrl: URL? = nil) -> Self {
+    public func copy(
+        name: String? = nil,
+        image: Data? = nil,
+        imageUrl: URL? = nil,
+        songUrl: URL? = nil
+    ) -> Self {
         Track(
             id: self.id,
-            name: name,
+            name: name ?? self.name,
+            duration: self.duration,
+            artistID: self.artistID,
+            artistName: self.artistName,
+            artistIdstr: self.artistIdstr,
+            albumName: self.albumName,
+            albumID: self.albumID,
+            licenseCcurl: self.licenseCcurl,
+            position: self.position,
+            releasedate: self.releasedate,
+            albumImage: self.albumImage,
+            audio: self.audio,
+            audiodownload: self.audiodownload,
+            shorturl: self.shorturl,
+            shareurl: self.shareurl,
+            waveform: self.waveform,
+            image: image ?? self.image,
+            musicinfo: self.musicinfo,
+            imageUrl: imageUrl ?? self.imageUrl,
+            songUrl: songUrl ?? self.songUrl
+        )
+    }
+
+    public func clearUrl() -> Self {
+        Track(
+            id: self.id,
+            name: self.name,
             duration: self.duration,
             artistID: self.artistID,
             artistName: self.artistName,
@@ -51,8 +82,35 @@ struct Track: Identifiable, Hashable {
             waveform: self.waveform,
             image: self.image,
             musicinfo: self.musicinfo,
-            imageUrl: imageUrl ?? self.imageUrl,
-            songUrl: songUrl ?? self.songUrl
+            imageUrl: self.imageUrl,
+            songUrl: nil
+        )
+    }
+}
+
+extension Track {
+    func toModel() -> TrackModel {
+        TrackModel(
+            id: self.id,
+            name: self.name,
+            duration: self.duration,
+            artistID: self.artistID,
+            artistName: self.artistName,
+            artistIdstr: self.artistIdstr,
+            albumName: self.albumName,
+            albumID: self.albumID,
+            licenseCcurl: self.licenseCcurl,
+            position: self.position,
+            releasedate: self.releasedate,
+            albumImage: self.albumImage,
+            audio: self.audio,
+            audiodownload: self.audiodownload,
+            shorturl: self.shorturl,
+            shareurl: self.shareurl,
+            waveform: self.waveform,
+            imageUrl: self.imageUrl,
+            musicinfo: self.musicinfo,
+            songUrl: self.songUrl
         )
     }
 }
