@@ -71,21 +71,32 @@ final class FileLocalService: LocalService {
         return .failure(LocalError.directoryError(dir))
     }
     
-    func getFileUrl(dir: String, fileName: String) async -> Result<URL, any Error> {
+    // MARK: - Get Data File
+    func fetchFile(dir: String, fileName: String) async -> Result<Data, any Error> {
         guard let path = getDirectoryUrl(dir) else { return .failure(LocalError.directoryError(dir)) }
-        return if let (fileURL, isFileExists) = await getFileUrl(path: path, fileName: fileName), isFileExists {
-            .success(fileURL)
+        return if let (fileURL, isFileExists) = await getFileUrl(path: path, fileName: fileName), isFileExists,
+                  let data = manager.contents(atPath: fileURL.path()) {
+            .success(data)
         } else {
             .failure(LocalError.fileError(fileName))
         }
     }
     
+    func fetchFile(fileUrl: URL) async -> Result<Data, any Error> {
+        if manager.fileExists(atPath: fileUrl.path()), let data = manager.contents(atPath: fileUrl.path()) {
+            .success(data)
+        } else {
+            .failure(LocalError.fileError(fileUrl.lastPathComponent))
+        }
+    }
+    
+    // MARK: - File operations
     func saveFile(dir: String, fileName: String, data: Data) async -> Result<URL, any Error> {
         guard let path = getDirectoryUrl(dir) else { return .failure(LocalError.directoryError(dir)) }
         
         // проверить если файл есть
         return if let (fileURL, isFileExists) = await getFileUrl(path: path, fileName: fileName), isFileExists ||
-            manager.createFile(atPath: fileURL.path(),contents: data) {
+                    manager.createFile(atPath: fileURL.path(),contents: data) {
             .success(fileURL)
         } else {
             .failure(LocalError.saveError(fileName))
@@ -116,6 +127,7 @@ final class FileLocalService: LocalService {
         
     }
     
+    // MARK: - URL File and Directory
     private func getDirectoryUrl(_ dir: String) -> URL? {
         let directory = manager.urls(for: .documentDirectory, in: .userDomainMask).first!
             .appendingPathComponent(dir, conformingTo: .directory)
@@ -132,9 +144,22 @@ final class FileLocalService: LocalService {
         return directory
     }
     
-    private func getFileUrl(path: URL, fileName: String) async -> (URL, Bool)? {
-        let fileURL = path.appendingPathComponent(fileName, conformingTo: .fileURL)
-        return  (fileURL, manager.fileExists(atPath: fileURL.path()))
+    func getFileUrl(dir: String, fileName: String) async -> Result<URL, any Error> {
+        guard let path = getDirectoryUrl(dir) else { return .failure(LocalError.directoryError(dir)) }
+        return if let (fileURL, isFileExists) = await getFileUrl(path: path, fileName: fileName), isFileExists {
+            .success(fileURL)
+        } else {
+            .failure(LocalError.fileError(fileName))
+        }
     }
     
+    private func getFileUrl(path: URL, fileName: String) async -> (URL, Bool)? {
+        let fileUrl = path.appendingPathComponent(fileName, conformingTo: .fileURL)
+        return  (fileUrl, manager.fileExists(atPath: fileUrl.path()))
+    }
+    
+    func isFileExists(fileUrl: URL?) async -> Bool {
+        guard let fileUrl else { return false }
+        return manager.fileExists(atPath: fileUrl.path())
+    }
 }
