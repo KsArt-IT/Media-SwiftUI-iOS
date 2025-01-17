@@ -38,7 +38,7 @@ final class MusicListViewModel: ObservableObject {
     }
 
     private func getMusicSongs() async -> [Track]? {
-        let result = await localRepository.fetchTracks()
+        let result = await localRepository.fetchData()
         
         switch result {
         case .success(let tracks):
