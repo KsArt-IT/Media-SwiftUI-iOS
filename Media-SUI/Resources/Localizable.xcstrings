@@ -33,6 +33,38 @@
         }
       }
     },
+    "DB track fetch error: %@" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ошибка получения трека из DB: %@"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Помилка отримання треку із DB: %@"
+          }
+        }
+      }
+    },
+    "DB track insert error: %@" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ошибка вставки трека в DB: %@"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Помилка вставки треку в DB: %@"
+          }
+        }
+      }
+    },
     "Decoding failed with error" : {
       "localizations" : {
         "ru" : {
