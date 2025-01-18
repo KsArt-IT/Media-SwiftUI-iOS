@@ -18,6 +18,7 @@ struct Media_SUIApp: App {
         }
     }
     init() {
-        print("Use api key: '\(MusicEndpoint.clientId)'")
+        debugPrint("Use api key: '\(MusicEndpoint.clientId)'")
+        debugPrint(URL.applicationSupportDirectory.path(percentEncoded: false))
     }
 }

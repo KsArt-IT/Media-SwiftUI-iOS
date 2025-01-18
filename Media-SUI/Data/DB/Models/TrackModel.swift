@@ -78,7 +78,7 @@ final class TrackModel {
 }
 
 extension TrackModel {
-    func toTrack(image: Data? = nil) -> Track {
+    func toTrack(image: Data? = nil, imageUrl: URL? = nil, songUrl: URL? = nil) -> Track {
         Track(
             id: self.id,
             name: self.name,
@@ -99,8 +99,8 @@ extension TrackModel {
             waveform: self.waveform,
             image: image,
             musicinfo: self.musicinfo,
-            imageUrl: self.imageUrl,
-            songUrl: self.songUrl
+            imageUrl: imageUrl ?? self.imageUrl,
+            songUrl: songUrl ?? self.songUrl
         )
     }
 }

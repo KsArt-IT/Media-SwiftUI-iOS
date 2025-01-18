@@ -91,6 +91,17 @@ final class FileLocalRepository: LocalRepository {
         }
     }
     
+    private func getFileUrl(dir: String, fileName: String) async -> URL? {
+        let result = await service.getFileUrl(dir: dir, fileName: fileName)
+        
+        return switch result {
+        case .success(let url):
+            url
+        case .failure(_):
+            nil
+        }
+    }
+    
     // MARK: - Database
     func fetchData() async -> Result<[Track], any Error> {
         let result = await dataService.fetchData()
@@ -99,8 +110,18 @@ final class FileLocalRepository: LocalRepository {
         case .success(let tracksModel):
             var tracks: [Track] = []
             for trackModel in tracksModel {
-                let image = await fetchFile(fileUrl: trackModel.imageUrl)
-                tracks.append(trackModel.toTrack(image: image))
+                let imageUrl = await getFileUrl(
+                    dir: Constants.imageDir,
+                    fileName: "\(trackModel.name).\(Constants.imageExt)"
+                )
+                let image = await fetchFile(fileUrl: imageUrl)
+                let songUrl = await getFileUrl(
+                    dir: Constants.musicDir,
+                    fileName: "\(trackModel.name).\(Constants.musicExt)"
+                )
+                print("\nFileLocalRepository:\(#function): imageUrl: \(imageUrl), songUrl: \(songUrl)\n")
+                // необходимо обновить url на файлы
+                tracks.append(trackModel.toTrack(image: image, imageUrl: imageUrl, songUrl: songUrl))
             }
             return .success(tracks)
         case .failure(let error):

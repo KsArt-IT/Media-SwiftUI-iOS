@@ -84,9 +84,14 @@ final class FileLocalService: LocalService {
     
     func fetchFile(fileUrl: URL) async -> Result<Data, any Error> {
         if manager.fileExists(atPath: fileUrl.path()), let data = manager.contents(atPath: fileUrl.path()) {
-            .success(data)
+            return .success(data)
         } else {
-            .failure(LocalError.fileError(fileUrl.lastPathComponent))
+            // попробуем по другому
+            let fileName = fileUrl.lastPathComponent
+            let dir = fileName.contains(Constants.imageExt) ? Constants.imageDir : fileName.contains(Constants.musicExt) ? Constants.musicDir : ""
+            print("FileLocalService:\(#function): fetch files error = \(fileName) - \(dir)")
+            return await fetchFile(dir: dir, fileName: fileName)
+//            .failure(LocalError.fileError(fileUrl.lastPathComponent))
         }
     }
     
@@ -131,7 +136,7 @@ final class FileLocalService: LocalService {
     private func getDirectoryUrl(_ dir: String) -> URL? {
         let directory = manager.urls(for: .documentDirectory, in: .userDomainMask).first!
             .appendingPathComponent(dir, conformingTo: .directory)
-        
+        print("FileLocalService:\(#function): dir: \(directory.absoluteString)")
         if !manager.fileExists(atPath: directory.path) {
             do {
                 try manager.createDirectory(at: directory, withIntermediateDirectories: true, attributes: nil)

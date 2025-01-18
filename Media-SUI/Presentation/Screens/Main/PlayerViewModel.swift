@@ -45,12 +45,13 @@ final class PlayerViewModel: NSObject, ObservableObject {
     }
     
     private func play() {
+        print("\nPlayerViewModel:\(#function)")
         guard let track, let url = track.songUrl else { return }
         
         do {
             self.currentPlaying = url
             self.currentTime = 0
-            print("PlayerViewModel:\(#function): play: \(url)")
+            print("PlayerViewModel:\(#function): play: \(url.absoluteString)")
             audioPlayer = try getPlayer(url)
             setState(
                 currentTime: Int(self.audioPlayer?.currentTime.binade ?? 0),
@@ -84,6 +85,7 @@ final class PlayerViewModel: NSObject, ObservableObject {
     
     // MARK: - Player
     private func getPlayer(_ url: URL) throws -> AVAudioPlayer {
+        print("PlayerViewModel:\(#function)")
         let player = try AVAudioPlayer(contentsOf: url)
         player.delegate = self
         return player
