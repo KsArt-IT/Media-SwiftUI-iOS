@@ -86,9 +86,22 @@ final class PlayerViewModel: NSObject, ObservableObject {
     // MARK: - Player
     private func getPlayer(_ url: URL) throws -> AVAudioPlayer {
         print("PlayerViewModel:\(#function)")
+        // инициализировать сессию
+        try initAudioSession()
+        // создать плеер
         let player = try AVAudioPlayer(contentsOf: url)
+        // установить делегат
         player.delegate = self
+        // подготовить
+        player.prepareToPlay()
         return player
+    }
+    
+    private func initAudioSession() throws {
+        let session = AVAudioSession.sharedInstance()
+        try session.setCategory(.playback, mode: .default, options: [])
+//        try session.setCategory(.playAndRecord, mode: .default, options: .defaultToSpeaker)
+        try session.setActive(true)
     }
     
     // MARK: - State
