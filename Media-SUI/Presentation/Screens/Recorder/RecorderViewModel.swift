@@ -109,18 +109,25 @@ final class RecorderViewModel: NSObject, ObservableObject {
         guard await AVAudioApplication.requestRecordPermission() else { throw AudioRecorderError.permissionDenied }
         guard let url = await getNextRecordingUrl() else { throw LocalError.directoryError(Constants.recordingDir) }
         
-        let session = AVAudioSession.sharedInstance()
-        try session.setCategory(.playAndRecord, mode: .default, options: .defaultToSpeaker)
-        try session.setActive(true)
-        
+        // инициализировать сессию
+        try initAudioSession()
+        // создать диктофон
         let recorder = try AVAudioRecorder(
             url: url,
             settings: getSettingsRecording()
         )
+        // установить делегат
         recorder.delegate = self
         recorder.isMeteringEnabled = true
+        // подготовить к записи
         recorder.prepareToRecord()
         return recorder
+    }
+    
+    private func initAudioSession() throws {
+        let session = AVAudioSession.sharedInstance()
+        try session.setCategory(.record, mode: .default, options: [])
+        try session.setActive(true)
     }
     
     private func getNextRecordingUrl() async -> URL? {
@@ -129,7 +136,7 @@ final class RecorderViewModel: NSObject, ObservableObject {
         return switch result {
         case .success(let url):
             url
-        case .failure(let error):
+        case .failure(_):
             nil
         }
     }
