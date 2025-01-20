@@ -56,14 +56,13 @@ final class MusicListViewModel: ObservableObject {
     }
     
     // MARK: - Delete
-    public func delete(_ url: URL?) {
-        guard let url else { return }
+    public func delete(_ track: Track) {
         Task { [weak self] in
-            let result = await self?.localRepository.delete(at: url)
+            let result = await self?.localRepository.deleteTrack(track: track)
             
             switch result {
             case .success(_):
-                await self?.deleteTrack(url)
+                await self?.deleteTrack(track)
             case .failure(let error):
                 await self?.showError(error)
             case .none:
@@ -73,8 +72,8 @@ final class MusicListViewModel: ObservableObject {
     }
     
     @MainActor
-    private func deleteTrack(_ url: URL) async {
-        tracks.removeAll(where: { $0.songUrl == url })
+    private func deleteTrack(_ track: Track) async {
+        tracks.removeAll(where: { $0.id == track.id })
     }
     
     // MARK: - Rename

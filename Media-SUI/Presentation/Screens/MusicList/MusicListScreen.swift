@@ -24,7 +24,7 @@ struct MusicListScreen: View {
                     .swipeActions(edge: .trailing) {
                         Button {
                             withAnimation {
-                                viewModel.delete(track.songUrl)
+                                viewModel.delete(track)
                             }
                         } label: {
                             Label("Delete", systemImage: "trash")
