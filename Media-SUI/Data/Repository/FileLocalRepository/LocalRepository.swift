@@ -15,6 +15,7 @@ protocol LocalRepository: AnyObject {
     func saveFile(dir: String, name: String, data: Data) async -> Result<URL, any Error>
     func rename(at url: URL, to name: String) async -> Result<URL, any Error>
     func delete(at url: URL) async -> Result<Bool, any Error>
+    func deleteTrack(track: Track) async -> Result<Bool, any Error>
     
     func fetchData() async -> Result<[Track], any Error>
     func fetchData(id: String) async -> Result<Track, any Error>

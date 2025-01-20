@@ -58,7 +58,7 @@ final class FileLocalRepository: LocalRepository {
     func saveFile(dir: String, name: String, data: Data) async -> Result<URL, any Error> {
         let result = await service.saveFile(
             dir: dir,
-            fileName: name,
+            fileName: normalizeFileName(name),
             data: data
         )
         return switch result {
@@ -70,7 +70,10 @@ final class FileLocalRepository: LocalRepository {
     }
     
     func rename(at url: URL, to name: String) async -> Result<URL, any Error> {
-        let result = await service.rename(at: url, to: name)
+        let result = await service.rename(
+            at: url,
+            to: normalizeFileName(name)
+        )
         
         return switch result {
         case .success(let url):
@@ -78,6 +81,21 @@ final class FileLocalRepository: LocalRepository {
         case .failure(let error):
                 .failure(error)
         }
+    }
+    
+    func deleteTrack(track: Track) async -> Result<Bool, any Error> {
+        // удалить из базы и удалить файлы mp3, jpeg
+        let result = await dataService.deleteData(id: track.id)
+        if case .failure(let error) = result {
+            return .failure(error)
+        }
+        if let url = track.imageUrl {
+            _ = await delete(at: url)
+        }
+        if let url = track.songUrl {
+            _ = await delete(at: url)
+        }
+        return .success(true)
     }
     
     func delete(at url: URL) async -> Result<Bool, any Error> {
@@ -92,7 +110,7 @@ final class FileLocalRepository: LocalRepository {
     }
     
     private func getFileUrl(dir: String, fileName: String) async -> URL? {
-        let result = await service.getFileUrl(dir: dir, fileName: fileName)
+        let result = await service.getFileUrl(dir: dir, fileName: normalizeFileName(fileName))
         
         return switch result {
         case .success(let url):
@@ -100,6 +118,11 @@ final class FileLocalRepository: LocalRepository {
         case .failure(_):
             nil
         }
+    }
+    
+    private func normalizeFileName(_ name: String) -> String {
+        let invalidCharacters = "[^a-zA-Z0-9._-]" // Разрешены только буквы, цифры, точка, подчеркивание и дефис
+            return name.replacingOccurrences(of: invalidCharacters, with: "_", options: .regularExpression)
     }
     
     // MARK: - Database
