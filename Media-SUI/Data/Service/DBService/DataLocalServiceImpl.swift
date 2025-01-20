@@ -44,6 +44,25 @@ final class DataLocalServiceImpl: DataService {
         }
     }
     
+    // MARK: - Delete
+    func deleteData(id: String) async -> Result<Bool, any Error> {
+        let result = await fetchData(id: id)
+        
+        return switch result {
+        case .success(let track):
+                .success(await deleteData(track: track))
+        case .failure(let error):
+                .failure(error)
+        }
+    }
+    
+    @MainActor
+    private func deleteData(track: TrackModel) async -> Bool {
+        db.context.delete(track)
+        save()
+        return true
+    }
+    
     // MARK: - Save
     @MainActor
     public func saveData(track: TrackModel) async -> Result<Bool, any Error> {
