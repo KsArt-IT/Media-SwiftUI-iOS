@@ -17,6 +17,7 @@ struct MusicListScreen: View {
             
             List(viewModel.tracks) { track in
                 TrackView(track: track)
+                    .frame(height: Constants.songHeight)
                     .onTapGesture {
                         print("select=\(track)")
                         selected = track
@@ -44,8 +45,11 @@ struct MusicListScreen: View {
             .scrollIndicators(.hidden)
         }
         .frame(maxHeight: .infinity, alignment: .top)
-        .padding(.horizontal)
-        .padding(.bottom, 70)
+        .padding(.horizontal, Constants.tiny)
+        .padding(.bottom, Constants.songHeight)
+        .background {
+            BackgroundView(position: 1)
+        }
         .alertRename(isPresented: $viewModel.isRenameVisible, name: $viewModel.name) {
             viewModel.rename()
         }
@@ -56,5 +60,10 @@ struct MusicListScreen: View {
 }
 
 #Preview {
-//    MusicListScreen()
+    MusicListScreen(
+        viewModel: MusicListViewModel(
+            localRepository: LocalRepositoryPreview()
+        ),
+        selected: .constant(nil)
+    )
 }
