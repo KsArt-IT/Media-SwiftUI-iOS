@@ -44,9 +44,12 @@ enum Constants {
     static let shadowRadius: CGFloat = 8
     static let shadowOffset: CGFloat = shadowRadius / 2
     
+    static let tiny: CGFloat = 4
     static let small: CGFloat = 8
     static let medium: CGFloat = 16
     static let smalImage: CGFloat = 100
+    static let songImage: CGFloat = 75
+    static let songHeight: CGFloat = songImage + 2 * small
     
     static let bgGeometryEffectId = "BGVIEW"
     static let artGeometryEffectId = "ARTWORK"
