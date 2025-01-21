@@ -13,47 +13,30 @@ struct TrackView: View {
     var body: some View {
         HStack {
             ImageDataView(data: track.image)
-                .frame(width: Constants.smalImage, height: Constants.smalImage)
+                .frame(width: Constants.songImage, height: Constants.songImage)
+                .cornerRadius(Constants.radius)
             VStack {
                 Text(track.name)
-                    .font(.title)
+                    .font(.title3)
+                    .lineLimit(1)
+                Text(track.albumName)
+                    .font(.caption)
+                    .lineLimit(1)
                 Text(track.artistName)
                     .font(.subheadline)
-                Text(track.albumName)
-                    .font(.subheadline)
+                    .lineLimit(1)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal)
+            .frame(maxWidth: .infinity, alignment: .center)
+            .padding(.horizontal, Constants.small)
             Text(track.duration.toTime())
+                .font(.title3)
         }
-        .cornerRadius(Constants.radius)
-    }
-}
-
-#Preview {
-    TrackView(
-        track: Track(
-            id: "168",
-            name: "J'm'e FPM",
-            duration: 183,
-            artistID: "1",
-            artistName: "TriFace",
-            artistIdstr: "TriFace",
-            albumName: "Premiers Jets",
-            albumID: "24",
-            licenseCcurl: "",
-            position: 1,
-            releasedate: "2004-12-17",
-            albumImage: "https:\\usercontent.jamendo.com?type=album&id=24&width=300&trackid=168",
-            audio: "https:\\prod-1.storage.jamendo.com?trackid=168&format=mp31&from=DRcdmeQj2vgCVB2IIcipgg%3D%3D%7C86ejO6MyjtkFZi%2F12nabcQ%3D%3D",
-            audiodownload: "https:\\prod-1.storage.jamendo.com\\download\\track\\168\\mp32",
-            shorturl: "",
-            shareurl: "https:\\www.jamendo.com\\track\\168",
-            waveform: [],
-            image: nil,
-            musicinfo: "",
-            imageUrl: nil,
-            songUrl: nil
+        .padding(.all, Constants.tiny)
+        .overlay(
+            RoundedRectangle(cornerRadius: Constants.radius)
+                .stroke(false ? .yellow : .second, lineWidth: 1)
         )
-    )
+        .listRowInsets(.init())
+        .listRowBackground(Color.clear)
+    }
 }
