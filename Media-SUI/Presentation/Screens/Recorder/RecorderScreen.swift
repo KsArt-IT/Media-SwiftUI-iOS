@@ -69,6 +69,9 @@ struct RecorderScreen: View {
         .frame(maxHeight: .infinity, alignment: .top)
         .padding(.horizontal)
         .padding(.bottom, 70)
+        .background {
+            BackgroundView()
+        }
         .alertRename(isPresented: $viewModel.isRenameVisible, name: $viewModel.name) {
             viewModel.rename()
         }
