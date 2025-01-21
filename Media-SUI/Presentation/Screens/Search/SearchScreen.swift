@@ -32,8 +32,11 @@ struct SearchScreen: View {
                     .padding()
                 }
                 .padding(.top, Constants.small)
-                .padding(.bottom, 100)
+                .padding(.bottom, Constants.songHeight)
             }
+        }
+        .background {
+            BackgroundView(position: 3)
         }
         .onChange(of: viewModel.currentTrack) { _, newValue in
             selected = newValue
