@@ -17,7 +17,7 @@ final class PlayerViewModel: NSObject, ObservableObject {
     private var currentTime: Int = 0
     
     // MARK: - Player Commands
-    public func player(of action: PlayerAction) {
+    public func onPlayerEvent(of action: PlayerAction) {
         switch action {
         case .start(let track):
             self.start(track)

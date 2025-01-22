@@ -12,6 +12,8 @@ struct ContentView: View {
     @Environment(\.colorScheme) private var colorScheme
     // сохраним-загрузим выбранную тему
     @AppStorage("appTheme") private var appTheme = AppTheme.device
+    // текущий проигрываемый трек id
+    @AppStorage("currentSongId") private var currentSongId = ""
     
     @Environment(\.diManager) private var di
     @State private var selectedTab: Tab = .player
@@ -32,13 +34,14 @@ struct ContentView: View {
                 .tabMenu(Tab.search, icon: "mail.and.text.magnifyingglass")
         }
         .onChange(of: selectedTrack) {
+            currentSongId = selectedTrack?.id ?? ""
             viewModel.start(selectedTrack)
         }
         .musicPlayerUI(
             expand: $expandSheet,
             animation: animation,
             state: viewModel.state,
-            action: viewModel.player
+            action: viewModel.onPlayerEvent
         )
         // Hiding Tab Bar When Aheet is Expanded
         .toolbar(expandSheet ? .hidden : .visible, for: .tabBar)
