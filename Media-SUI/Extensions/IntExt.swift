@@ -21,3 +21,9 @@ extension Int {
         }
     }
 }
+
+extension TimeInterval {
+    func toTime() -> String {
+        Int(self).toTime()
+    }
+}

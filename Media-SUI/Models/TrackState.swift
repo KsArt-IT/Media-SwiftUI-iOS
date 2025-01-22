@@ -10,15 +10,15 @@ import Foundation
 struct TrackState {
     let id: String
     let name: String
-    let currentTime: Int
-    let duration: Int
+    let currentTime: TimeInterval
+    let duration: TimeInterval
     let artistName: String
     let image: Data?
     let isPlaying: Bool
 }
 
 extension TrackState {
-    func copy(currentTime: Int, isPlaying: Bool? = nil) -> Self {
+    func copy(currentTime: TimeInterval, isPlaying: Bool? = nil) -> Self {
         TrackState(
             id: self.id,
             name: self.name,
