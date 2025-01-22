@@ -15,7 +15,7 @@ final class PlayerViewModel: NSObject, ObservableObject {
     private var audioPlayer: AVAudioPlayer?
     private var currentPlaying: URL?
     private var currentTime: Int = 0
-    
+
     // MARK: - Player Commands
     public func onPlayerEvent(of action: PlayerAction) {
         switch action {
@@ -31,6 +31,8 @@ final class PlayerViewModel: NSObject, ObservableObject {
             break
         case .forward:
             break
+        case .seekPosition(let time):
+            self.playFrom(TimeInterval(time))
         }
     }
     
@@ -54,8 +56,8 @@ final class PlayerViewModel: NSObject, ObservableObject {
             print("PlayerViewModel:\(#function): play: \(url.absoluteString)")
             audioPlayer = try getPlayer(url)
             setState(
-                currentTime: Int(self.audioPlayer?.currentTime.binade ?? 0),
-                duration: self.audioPlayer?.duration.exponent ?? 0,
+                currentTime: self.audioPlayer?.currentTime ?? 0,
+                duration: self.audioPlayer?.duration ?? 0,
                 playing: true
             )
             audioPlayer?.play()
@@ -72,7 +74,7 @@ final class PlayerViewModel: NSObject, ObservableObject {
         } else {
             audioPlayer?.play()
         }
-        updateState(Int(audioPlayer?.currentTime.binade ?? 0), playing: audioPlayer?.isPlaying)
+        updateState()
     }
     
     private func stop() {
@@ -81,6 +83,14 @@ final class PlayerViewModel: NSObject, ObservableObject {
         audioPlayer = nil
         currentPlaying = nil
         state = nil
+    }
+    
+    private func playFrom(_ time: TimeInterval) {
+        guard audioPlayer != nil, let duration = audioPlayer?.duration, 0...duration ~= time else { return }
+        
+        audioPlayer?.currentTime = time
+        audioPlayer?.play()
+        updateState()
     }
     
     // MARK: - Player
@@ -105,7 +115,7 @@ final class PlayerViewModel: NSObject, ObservableObject {
     }
     
     // MARK: - State
-    private func setState(currentTime: Int, duration: Int, playing: Bool) {
+    private func setState(currentTime: TimeInterval, duration: TimeInterval, playing: Bool) {
         guard let track else {
             self.state = nil
             return
@@ -122,12 +132,12 @@ final class PlayerViewModel: NSObject, ObservableObject {
         )
     }
     
-    private func updateState(_ currentTime: Int, playing: Bool? = nil) {
+    private func updateState() {
         guard state != nil else { return }
         
         self.state = self.state?.copy(
-            currentTime: currentTime,
-            isPlaying: playing
+            currentTime: audioPlayer?.currentTime ?? 0,
+            isPlaying: audioPlayer?.isPlaying
         )
     }
 }

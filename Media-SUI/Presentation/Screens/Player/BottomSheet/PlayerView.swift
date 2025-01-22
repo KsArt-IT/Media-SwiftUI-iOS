@@ -46,15 +46,19 @@ struct PlayerView: View {
                     }
                     
                     // Timing Indicator
-                    Capsule()
-                        .fill(.ultraThinMaterial)
-                        .environment(\.colorScheme, .light)
-                        .frame(height: 5)
-                        .padding(.top, spacing)
+                    Slider(
+                        value: Binding(
+                            get: { Double(state?.currentTime ?? 0) },
+                            set: { action(.seekPosition($0)) }
+                        ),
+                        in: 0...Double(state?.duration ?? 0),
+                        step: 1
+                    )
+                    .foregroundStyle(Color.white)
                     
                     // Timing Label View
                     HStack {
-                        Text(state?.duration.toTime() ?? "0:00")
+                        Text(state?.currentTime.toTime() ?? "0:00")
                             .font(.caption)
                             .foregroundStyle(.gray)
                         

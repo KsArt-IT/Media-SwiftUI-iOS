@@ -15,4 +15,5 @@ enum PlayerAction {
     case stop
     case backward
     case forward
+    case seekPosition(_ time: Double)
 }
