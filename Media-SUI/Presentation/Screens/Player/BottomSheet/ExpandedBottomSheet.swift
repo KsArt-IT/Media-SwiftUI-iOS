@@ -27,14 +27,15 @@ struct ExpandedBottomSheet: View {
                     .overlay {
                         RoundedRectangle(cornerSize: animateContent ? deviceCornerRadius : CGSizeZero, style: .continuous)
                             .fill(.yellow)
+                            .blur(radius: 125)
                             .opacity(animateContent ? 1 : 0)
                     }
-                    .overlay(alignment: .top) {
-                        MusicInfoView(expandSheet: $expand, animation: animation, state: state, action: action)
-                        // Disabling Interaction (Since it`s not Necessary Here)
-                            .allowsHitTesting(false)
-                            .opacity(animateContent ? 0 : 1)
-                    }
+//                    .overlay(alignment: .top) {
+//                        MusicInfoView(expandSheet: $expand, animation: animation, state: state, action: action)
+//                        // Disabling Interaction (Since it`s not Necessary Here)
+//                            .allowsHitTesting(false)
+//                            .opacity(animateContent ? 0 : 1)
+//                    }
                     .matchedGeometryEffect(id: Constants.bgGeometryEffectId, in: animation)
                 
                 VStack(spacing: 15) {
@@ -60,11 +61,6 @@ struct ExpandedBottomSheet: View {
                             )
                     }
                     .matchedGeometryEffect(id: Constants.artGeometryEffectId, in: animation)
-                    // For Square Artwork Image
-//                    .frame(width: size.width - 50)
-                    // For Smaller Devices the padding will be 10 and for larger devices the padding will be 30
-//                    .padding(.all, size.height < 700 ? 10 : 30)
-                    
                     // Player View
                     PlayerView(state: state, action: action)
                     // Moving it From Bottom
@@ -116,4 +112,25 @@ extension View {
             CGSizeZero
         }
     }
+}
+
+#Preview {
+    @Previewable @Namespace var animation
+    let track = TrackPreview().tracks[0]
+    
+    ExpandedBottomSheet(
+        expand: .constant(true),
+        animation: animation,
+        state: TrackState(
+            id: track.id,
+            name: track.name,
+            currentTime: 50,
+            duration: TimeInterval(track.duration),
+            artistName: track.artistName,
+            image: track.image,
+            isPlaying: true
+        ),
+        action: {_ in
+        }
+    )
 }
