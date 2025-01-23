@@ -46,15 +46,22 @@ struct PlayerView: View {
                     }
                     
                     // Timing Indicator
-                    Slider(
-                        value: Binding(
-                            get: { Double(state?.currentTime ?? 0) },
-                            set: { action(.seekPosition($0)) }
-                        ),
-                        in: 0...Double(state?.duration ?? 0),
-                        step: 1
-                    )
-                    .foregroundStyle(Color.white)
+                    if let state {
+                        Slider(
+                            value: Binding(
+                                get: { Double(state.currentTime) },
+                                set: { action(.seekPosition($0)) }
+                            ),
+                            in: 0...Double(state.duration),
+                            step: 1
+                        )
+                        .foregroundStyle(Color.white)
+                    } else {
+                        Capsule()
+                            .fill(.ultraThinMaterial)
+                            .frame(height: 5)
+                            .foregroundStyle(Color.white)
+                    }
                     
                     // Timing Label View
                     HStack {
