@@ -90,12 +90,10 @@ final class PlayerViewModel: NSObject, ObservableObject {
     
     private func stop() {
         print("PlayerViewModel:\(#function)")
-        Task { [weak self] in
-            self?.audioPlayer?.stop()
-            self?.audioPlayer = nil
-            self?.currentPlaying = nil
-//            await self?.setState()
-        }
+        audioPlayer?.stop()
+        audioPlayer = nil
+        currentPlaying = nil
+        updateState()
     }
     
     // MARK: - Player
@@ -121,7 +119,7 @@ final class PlayerViewModel: NSObject, ObservableObject {
     
     // MARK: - State
     @MainActor
-    private func setState(_ state: TrackState? = nil) {
+    private func setState(_ state: TrackState?) {
         self.state = state
         
         if let isPlaying = state?.isPlaying {
@@ -131,7 +129,6 @@ final class PlayerViewModel: NSObject, ObservableObject {
     
     private func setState(currentTime: TimeInterval, duration: TimeInterval, playing: Bool) async {
         guard let track else {
-            self.state = nil
             return
         }
         
@@ -154,7 +151,7 @@ final class PlayerViewModel: NSObject, ObservableObject {
         Task { [weak self] in
             let newState  = self?.state?.copy(
                 currentTime: self?.audioPlayer?.currentTime ?? 0,
-                isPlaying: self?.audioPlayer?.isPlaying
+                isPlaying: self?.audioPlayer?.isPlaying ?? false
             )
             
             await self?.setState(newState)
@@ -184,6 +181,7 @@ final class PlayerViewModel: NSObject, ObservableObject {
     }
     
     private func stopTimer() {
+        print("PlayerViewModel:\(#function)")
         guard timer != nil else { return }
         timer?.invalidate()
         timer = nil
