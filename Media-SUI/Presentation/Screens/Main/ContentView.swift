@@ -35,7 +35,7 @@ struct ContentView: View {
         }
         .onChange(of: selectedTrack) {
             currentSongId = selectedTrack?.id ?? ""
-            viewModel.start(selectedTrack)
+            viewModel.onPlayerEvent(of: .start(selectedTrack))
         }
         .musicPlayerUI(
             expand: $expandSheet,
