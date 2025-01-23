@@ -10,7 +10,6 @@ import AVFoundation
 
 enum PlayerAction {
     case start(_ track: Track?)
-    case play
     case pauseOrPlay
     case stop
     case backward
