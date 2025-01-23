@@ -14,7 +14,6 @@ final class PlayerViewModel: NSObject, ObservableObject {
     private var track: Track?
     private var audioPlayer: AVAudioPlayer?
     private var currentPlaying: URL?
-    private var currentTime: Int = 0
     private var timer: Timer?
     
     // MARK: - Player Commands
@@ -53,7 +52,6 @@ final class PlayerViewModel: NSObject, ObservableObject {
         
         do {
             currentPlaying = url
-            currentTime = 0
             print("PlayerViewModel:\(#function): play: \(url.absoluteString)")
             audioPlayer = try await getPlayer(url)
             await setState(
@@ -96,7 +94,7 @@ final class PlayerViewModel: NSObject, ObservableObject {
             self?.audioPlayer?.stop()
             self?.audioPlayer = nil
             self?.currentPlaying = nil
-            await self?.setState()
+//            await self?.setState()
         }
     }
     
