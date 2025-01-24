@@ -37,7 +37,6 @@ enum Constants {
     
     static let playerUpdateInterval: TimeInterval = 1
     static let playerSkipTime: TimeInterval = 10
-    static let playerSkipTimeTitle = String(Int(playerSkipTime))
     
     static let radius: CGFloat = 10
     static let cornerSize = CGSize(width: 8, height: 8)

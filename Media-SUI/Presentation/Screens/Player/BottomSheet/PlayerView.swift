@@ -86,14 +86,9 @@ struct PlayerView: View {
                     Button {
                         action(.skipBackward)
                     } label: {
-                        Image(systemName: "arrow.counterclockwise")
+                        Image(systemName: "gobackward.10")
                         // Dynamic Sizing for Smaller to Large iPhone
                             .font(size.height < 300 ? .title3 : .title)
-                            .overlay {
-                                Text(Constants.playerSkipTimeTitle)
-                                    .font(.caption2)
-                                    .offset(y: 3)
-                            }
                     }
                     
                     Button {
@@ -124,14 +119,9 @@ struct PlayerView: View {
                     Button {
                         action(.skipForward)
                     } label: {
-                        Image(systemName: "arrow.clockwise")
+                        Image(systemName: "goforward.10")
                         // Dynamic Sizing for Smaller to Large iPhone
                             .font(size.height < 300 ? .title3 : .title)
-                            .overlay {
-                                Text(Constants.playerSkipTimeTitle)
-                                    .font(.caption2)
-                                    .offset(y: 3)
-                            }
                     }
                     
                 }
