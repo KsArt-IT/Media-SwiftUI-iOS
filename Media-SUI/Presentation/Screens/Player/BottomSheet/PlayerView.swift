@@ -16,6 +16,9 @@ struct PlayerView: View {
             let size = $0.size
             // Dynamic Spacing Using Available Height
             let spacing = size.height * 0.04
+            let height = size.height / 3.2
+            let playButtonSize: Double = size.height < 300 ? 30 : 60
+            let playButtonEdgeSize = playButtonSize * 1.5
             
             // Sizing it for more compact look
             VStack(spacing: spacing) {
@@ -79,7 +82,7 @@ struct PlayerView: View {
                     
                 }
                 // Moving it to Top
-                .frame(height: size.height / 2.5, alignment: .top)
+                .frame(height: height, alignment: .top)
                 
                 // Playback Cotrols
                 HStack(spacing: size.width * 0.08) {
@@ -92,7 +95,9 @@ struct PlayerView: View {
                     }
                     
                     Button {
-                        action(.backward)
+                        withAnimation(.bouncy) {
+                            action(.backward)
+                        }
                     } label: {
                         Image(systemName: "backward.fill")
                         // Dynamic Sizing for Smaller to Large iPhone
@@ -103,13 +108,20 @@ struct PlayerView: View {
                     Button {
                         action(.pauseOrPlay)
                     } label: {
-                        Image(systemName: state?.isPlaying == true ? "pause.circle" : "play.circle")
-                        // Dynamic Sizing for Smaller to Large iPhone
-                            .font(size.height < 300 ? .largeTitle : .system(size: 50))
+                        ZStack {
+                            Circle()
+                                .fill(.white.opacity(0.3))
+                                .frame(width: playButtonEdgeSize, height: playButtonEdgeSize)
+                            Image(systemName: state?.isPlaying == true ? "pause.circle" : "play.circle")
+                            // Dynamic Sizing for Smaller to Large iPhone
+                                .font(.system(size: playButtonSize))
+                        }
                     }
                     
                     Button {
-                        action(.forward)
+                        withAnimation(.bouncy) {
+                            action(.forward)
+                        }
                     } label: {
                         Image(systemName: "forward.fill")
                         // Dynamic Sizing for Smaller to Large iPhone
@@ -176,7 +188,7 @@ struct PlayerView: View {
                     .padding(.top, spacing)
                 }
                 // Moving it to bottom
-                .frame(height: size.height / 2.5, alignment: .bottom)
+                .frame(height: height, alignment: .bottom)
             }
         }
         .compositingGroup() // Важно для корректного наложения
