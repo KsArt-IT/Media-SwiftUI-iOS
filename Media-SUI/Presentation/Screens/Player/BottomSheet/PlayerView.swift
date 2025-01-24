@@ -82,7 +82,20 @@ struct PlayerView: View {
                 .frame(height: size.height / 2.5, alignment: .top)
                 
                 // Playback Cotrols
-                HStack(spacing: size.width * 0.18) {
+                HStack(spacing: size.width * 0.08) {
+                    Button {
+                        action(.skipBackward)
+                    } label: {
+                        Image(systemName: "arrow.counterclockwise")
+                        // Dynamic Sizing for Smaller to Large iPhone
+                            .font(size.height < 300 ? .title3 : .title)
+                            .overlay {
+                                Text(Constants.playerSkipTimeTitle)
+                                    .font(.caption2)
+                                    .offset(y: 3)
+                            }
+                    }
+                    
                     Button {
                         action(.backward)
                     } label: {
@@ -106,6 +119,19 @@ struct PlayerView: View {
                         Image(systemName: "forward.fill")
                         // Dynamic Sizing for Smaller to Large iPhone
                             .font(size.height < 300 ? .title3 : .title)
+                    }
+                    
+                    Button {
+                        action(.skipForward)
+                    } label: {
+                        Image(systemName: "arrow.clockwise")
+                        // Dynamic Sizing for Smaller to Large iPhone
+                            .font(size.height < 300 ? .title3 : .title)
+                            .overlay {
+                                Text(Constants.playerSkipTimeTitle)
+                                    .font(.caption2)
+                                    .offset(y: 3)
+                            }
                     }
                     
                 }

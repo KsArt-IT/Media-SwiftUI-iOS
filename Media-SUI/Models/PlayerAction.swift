@@ -12,7 +12,9 @@ enum PlayerAction {
     case start(_ track: Track?)
     case pauseOrPlay
     case stop
+    case skipBackward
     case backward
     case forward
+    case skipForward
     case seekPosition(_ time: Double)
 }

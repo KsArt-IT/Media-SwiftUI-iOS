@@ -36,6 +36,8 @@ enum Constants {
     static let waveformInterval = 0.05 // 24 раза в секунду
     
     static let playerUpdateInterval: TimeInterval = 1
+    static let playerSkipTime: TimeInterval = 10
+    static let playerSkipTimeTitle = String(Int(playerSkipTime))
     
     static let radius: CGFloat = 10
     static let cornerSize = CGSize(width: 8, height: 8)

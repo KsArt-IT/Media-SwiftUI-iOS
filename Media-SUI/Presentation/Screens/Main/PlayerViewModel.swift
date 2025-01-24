@@ -25,6 +25,10 @@ final class PlayerViewModel: NSObject, ObservableObject {
             pauseOrPlay()
         case .stop:
             stop()
+        case .skipBackward:
+            skipBackwardAndPlay()
+        case .skipForward:
+            skipForwardAndPlay()
         case .backward:
             break
         case .forward:
@@ -70,6 +74,24 @@ final class PlayerViewModel: NSObject, ObservableObject {
         
         audioPlayer?.currentTime = time
         audioPlayer?.play()
+        updateState()
+    }
+    
+    private func skipBackwardAndPlay() {
+        guard let audioPlayer else { return }
+        
+        let time = audioPlayer.currentTime - Constants.playerSkipTime
+        audioPlayer.currentTime = max(0, time)
+        audioPlayer.play()
+        updateState()
+    }
+    
+    private func skipForwardAndPlay() {
+        guard let audioPlayer else { return }
+        
+        let time = audioPlayer.currentTime + Constants.playerSkipTime
+        audioPlayer.currentTime = min(time, audioPlayer.duration)
+        audioPlayer.play()
         updateState()
     }
     
