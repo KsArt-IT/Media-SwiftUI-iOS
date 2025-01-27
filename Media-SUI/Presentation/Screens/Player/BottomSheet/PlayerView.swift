@@ -96,7 +96,7 @@ struct PlayerView: View {
                     
                     Button {
                         withAnimation(.bouncy) {
-                            action(.backward)
+                            action(.backward())
                         }
                     } label: {
                         Image(systemName: "backward.fill")
@@ -120,7 +120,7 @@ struct PlayerView: View {
                     
                     Button {
                         withAnimation(.bouncy) {
-                            action(.forward)
+                            action(.forward())
                         }
                     } label: {
                         Image(systemName: "forward.fill")

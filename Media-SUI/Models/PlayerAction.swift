@@ -8,13 +8,13 @@
 import Foundation
 import AVFoundation
 
-enum PlayerAction {
+enum PlayerAction: Hashable {
     case start(_ track: Track?)
     case pauseOrPlay
     case stop
     case skipBackward
-    case backward
-    case forward
+    case backward(_ rnd: Int = -1)
+    case forward(_ rnd: Int = -1)
     case skipForward
     case seekPosition(_ time: Double)
 }

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MusicListScreen: View {
     @StateObject var viewModel: MusicListViewModel
-    @Binding var selected: Track?
+    @Binding var playerState: PlayerAction?
     
     var body: some View {
         VStack {
@@ -18,10 +18,6 @@ struct MusicListScreen: View {
             List(viewModel.tracks) { track in
                 TrackView(track: track)
                     .frame(height: Constants.songHeight)
-                    .onTapGesture {
-                        print("select=\(track)")
-                        selected = track
-                    }
                     .swipeActions(edge: .trailing) {
                         Button {
                             withAnimation {
@@ -40,6 +36,9 @@ struct MusicListScreen: View {
                         }
                         .tint(.blue)
                     }
+                    .onTapGesture {
+                        viewModel.select(track)
+                    }
             }
             .listStyle(.plain)
             .scrollIndicators(.hidden)
@@ -53,6 +52,12 @@ struct MusicListScreen: View {
         .alertRename(isPresented: $viewModel.isRenameVisible, name: $viewModel.name) {
             viewModel.rename()
         }
+        .onChange(of: viewModel.currentTrack) { _, track in
+            playerState = track != nil ? .start(track) : nil
+        }
+        .onChange(of: playerState) { _, event in
+            viewModel.selectEvent(event)
+        }
         .onAppear {
             viewModel.updateMusicSongsList()
         }
@@ -64,6 +69,6 @@ struct MusicListScreen: View {
         viewModel: MusicListViewModel(
             localRepository: LocalRepositoryPreview()
         ),
-        selected: .constant(nil)
+        playerState: .constant(nil)
     )
 }

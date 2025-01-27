@@ -14,7 +14,7 @@ struct TrackView: View {
         HStack {
             ImageDataView(data: track.image)
                 .frame(width: Constants.songImage, height: Constants.songImage)
-                .cornerRadius(Constants.radius)
+                .clipShape(RoundedRectangle(cornerRadius: Constants.radius))
             VStack {
                 Text(track.name)
                     .font(.title3)

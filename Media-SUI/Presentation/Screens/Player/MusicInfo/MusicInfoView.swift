@@ -51,7 +51,7 @@ struct MusicInfoView: View {
             }
             .padding(.trailing, Constants.small)
             Button {
-                action(.forward)
+                action(.forward())
             } label: {
                 Image(systemName: "forward.fill")
                     .font(.title2)

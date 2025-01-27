@@ -9,7 +9,7 @@ import SwiftUI
 
 struct SearchScreen: View {
     @StateObject var viewModel: SearchScreenViewModel
-    @Binding var selected: Track?
+    @Binding var playerState: PlayerAction?
     
     var body: some View {
         VStack {
@@ -20,7 +20,6 @@ struct SearchScreen: View {
                     ForEach(viewModel.tracks) { track in
                         TrackView(track: track)
                             .onTapGesture {
-//                                print("select=\(track)")
                                 viewModel.download(track)
                             }
                     }
@@ -38,8 +37,8 @@ struct SearchScreen: View {
         .background {
             BackgroundView(position: 3)
         }
-        .onChange(of: viewModel.currentTrack) { _, newValue in
-            selected = newValue
+        .onChange(of: viewModel.currentTrack) { _, track in
+            playerState = track != nil ? .start(track) : nil
         }
     }
 }

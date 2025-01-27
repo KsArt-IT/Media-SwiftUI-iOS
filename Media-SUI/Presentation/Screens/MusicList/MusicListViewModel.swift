@@ -13,7 +13,7 @@ final class MusicListViewModel: ObservableObject {
     @Published var tracks: [Track] = []
     @Published var isRenameVisible = false
     @Published var name = ""
-    private var currentTrack: Track?
+    @Published private(set) var currentTrack: Track?
     
 
     private var task: Task<(), Never>?
@@ -23,9 +23,33 @@ final class MusicListViewModel: ObservableObject {
         self.localRepository = localRepository
     }
     
+    // MARK: - Player
+    public func selectEvent(_ event: PlayerAction?) {
+        guard let event else { return }
+        
+        switch event {
+        case .start(let track):
+            select(track)
+        case .pauseOrPlay:
+            break
+        case .stop:
+            select(nil)
+        case .skipBackward:
+            break
+        case .backward:
+            prevTrack()
+        case .forward:
+            nextTrack()
+        case .skipForward:
+            break
+        case .seekPosition(_):
+            break
+        }
+    }
+    
     // MARK: - Get MusicSongs
     public func updateMusicSongsList() {
-        print("RecorderViewModel:\(#function)")
+        print("MusicListViewModel:\(#function)")
         guard task == nil else { return }
         
         let newTask = Task { [weak self] in
@@ -46,6 +70,29 @@ final class MusicListViewModel: ObservableObject {
         case .failure(let error):
             await showError(error)
             return nil
+        }
+    }
+    
+    // MARK: - Select Track
+    public func select(_ track: Track?) {
+        guard let track else { return }
+        
+        self.currentTrack = track
+    }
+    
+    private func prevTrack() {
+        print("MusicListViewModel: \(#function)")
+        guard let currentTrack, let index = tracks.firstIndex(where: { $0.id == currentTrack.id }) else { return }
+        if index > 0 {
+            select(tracks[index - 1])
+        }
+    }
+    
+    private func nextTrack() {
+        print("MusicListViewModel: \(#function)")
+        guard let currentTrack, let index = tracks.firstIndex(where: { $0.id == currentTrack.id }) else { return }
+        if index + 1 < tracks.count {
+            select(tracks[index + 1])
         }
     }
     
@@ -120,6 +167,6 @@ final class MusicListViewModel: ObservableObject {
         } else {
             error.localizedDescription
         }
-        print("SearchScreenViewModel: error: \(message)")
+        print("MusicListViewModel: error: \(message)")
     }
 }

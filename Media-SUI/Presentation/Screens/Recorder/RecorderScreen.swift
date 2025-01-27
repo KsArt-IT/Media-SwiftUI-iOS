@@ -9,7 +9,7 @@ import SwiftUI
 
 struct RecorderScreen: View {
     @StateObject var viewModel: RecorderViewModel
-    @Binding var selected: Track?
+    @Binding var playerState: PlayerAction?
     
     var body: some View {
         VStack {
@@ -75,8 +75,8 @@ struct RecorderScreen: View {
         .alertRename(isPresented: $viewModel.isRenameVisible, name: $viewModel.name) {
             viewModel.rename()
         }
-        .onChange(of: viewModel.currentTrack) { _, newValue in
-            selected = newValue
+        .onChange(of: viewModel.currentTrack) { _, track in
+            playerState = track != nil ? .start(track) : nil
         }
         .onAppear {
             viewModel.fetchRecordings()

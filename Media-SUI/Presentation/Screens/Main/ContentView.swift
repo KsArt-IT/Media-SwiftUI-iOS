@@ -17,25 +17,29 @@ struct ContentView: View {
     
     @Environment(\.diManager) private var di
     @State private var selectedTab: Tab = .player
-    // выбранный трек для проигрывания
-    @State private var selectedTrack: Track?
+
     // Animation Properties
     @State private var expandSheet: Bool = false
     @Namespace private var animation
+
+    // выбранный трек для проигрывания
+    @State private var playerState: PlayerAction?
     @StateObject var viewModel: PlayerViewModel
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            MusicListScreen(viewModel: di.resolve(), selected: $selectedTrack)
+            MusicListScreen(viewModel: di.resolve(), playerState: $playerState)
                 .tabMenu(Tab.player, icon: "play.square")
-            RecorderScreen(viewModel: di.resolve(), selected: $selectedTrack)
+            RecorderScreen(viewModel: di.resolve(), playerState: $playerState)
                 .tabMenu(Tab.recorder, icon: "mic.square")
-            SearchScreen(viewModel: di.resolve(), selected: $selectedTrack)
+            SearchScreen(viewModel: di.resolve(), playerState: $playerState)
                 .tabMenu(Tab.search, icon: "mail.and.text.magnifyingglass")
         }
-        .onChange(of: selectedTrack) {
-            currentSongId = selectedTrack?.id ?? ""
-            viewModel.onPlayerEvent(of: .start(selectedTrack))
+        .onChange(of: playerState) { _, event in
+            viewModel.onPlayerEvent(of: event)
+        }
+        .onChange(of: viewModel.playerState) { _, state in
+            playerState = state
         }
         .musicPlayerUI(
             expand: $expandSheet,

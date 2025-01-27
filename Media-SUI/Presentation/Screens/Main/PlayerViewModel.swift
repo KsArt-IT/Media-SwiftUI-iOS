@@ -11,13 +11,16 @@ import AVFoundation
 final class PlayerViewModel: NSObject, ObservableObject {
     
     @Published var state: TrackState?
+    @Published var playerState: PlayerAction?
     private var track: Track?
     private var audioPlayer: AVAudioPlayer?
     private var currentPlaying: URL?
     private var timer: Timer?
     
     // MARK: - Player Commands
-    public func onPlayerEvent(of action: PlayerAction) {
+    public func onPlayerEvent(of action: PlayerAction?) {
+        guard let action else { return }
+        
         switch action {
         case .start(let track):
             start(track)
@@ -30,9 +33,9 @@ final class PlayerViewModel: NSObject, ObservableObject {
         case .skipForward:
             skipForwardAndPlay()
         case .backward:
-            break
+            backward()
         case .forward:
-            break
+            forward()
         case .seekPosition(let time):
             playFrom(TimeInterval(time))
         }
@@ -108,6 +111,16 @@ final class PlayerViewModel: NSObject, ObservableObject {
             audioPlayer?.play()
         }
         updateState()
+    }
+    
+    private func backward() {
+        print("PlayerViewModel:\(#function)")
+        playerState = .backward(Int.random(in: 0..<Int.max))
+    }
+    
+    private func forward() {
+        print("PlayerViewModel:\(#function)")
+        playerState = .forward(Int.random(in: 0..<Int.max))
     }
     
     private func stop() {
