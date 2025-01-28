@@ -14,18 +14,20 @@ struct TrackState {
     let duration: TimeInterval
     let artistName: String
     let image: Data?
+    let volume: Float
     let isPlaying: Bool
 }
 
 extension TrackState {
-    func copy(currentTime: TimeInterval, isPlaying: Bool? = nil) -> Self {
+    func copy(currentTime: TimeInterval? = nil, volume: Float? = nil, isPlaying: Bool? = nil) -> Self {
         TrackState(
             id: self.id,
             name: self.name,
-            currentTime: currentTime,
+            currentTime: currentTime ?? self.currentTime,
             duration: self.duration,
             artistName: self.artistName,
             image: self.image,
+            volume: volume ?? self.volume,
             isPlaying: isPlaying ?? self.isPlaying
         )
     }

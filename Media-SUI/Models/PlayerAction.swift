@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import AVFoundation
 
 enum PlayerAction: Hashable {
     case start(_ track: Track?)
@@ -17,4 +16,5 @@ enum PlayerAction: Hashable {
     case forward(_ rnd: Int = -1)
     case skipForward
     case seekPosition(_ time: Double)
+    case setVolume(_ volume: Float)
 }
