@@ -44,6 +44,8 @@ final class MusicListViewModel: ObservableObject {
             break
         case .seekPosition(_):
             break
+        case .setVolume(_):
+            break
         }
     }
     
