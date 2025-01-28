@@ -128,6 +128,7 @@ extension View {
             duration: TimeInterval(track.duration),
             artistName: track.artistName,
             image: track.image,
+            volume: 0.5,
             isPlaying: true
         ),
         action: {_ in
