@@ -143,16 +143,36 @@ struct PlayerView: View {
                 // Volume $ Other Control
                 VStack(spacing: spacing) {
                     HStack(spacing: spacing) {
-                        Image(systemName: "speaker.fill")
+                        if let state {
+                            Slider(
+                                value: Binding(
+                                    get: { Double(state.volume) },
+                                    set: { action(.setVolume(Float($0))) }
+                                ),
+                                // небольшой буст громкости 0...1>1.21
+                                in: 0...1.21,
+                                step: 0.1
+                            )
+                            .foregroundStyle(Color.white)
+                            Image(systemName:
+                                    state.volume == 0 ? "speaker.slash" :
+                                    state.volume < 0.5 ? "speaker.wave.1":
+                                    state.volume < 1.1 ? "speaker.wave.2": "speaker.wave.3"
+                            )
+                            .font(.title3)
+                            .frame(width: 24, height: 24, alignment: .leadingFirstTextBaseline)
+                            .offset(y: -6)
                             .foregroundStyle(.gray)
-                        
-                        Capsule()
-                            .fill(.ultraThinMaterial)
-                            .environment(\.colorScheme, .light)
-                            .frame(height: 5)
-                        
-                        Image(systemName: "speaker.wave.3.fill")
+                        } else {
+                            Capsule()
+                                .fill(.ultraThinMaterial)
+                                .frame(height: 5)
+                                .foregroundStyle(Color.white)
+                            Image(systemName: "speaker.slash")
+                            .font(.title3)
+                            .frame(width: 24, alignment: .leading)
                             .foregroundStyle(.gray)
+                        }
                         
                     }
                     HStack(spacing: size.width * 0.18) {
