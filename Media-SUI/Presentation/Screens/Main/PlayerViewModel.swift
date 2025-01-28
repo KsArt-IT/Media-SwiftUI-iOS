@@ -38,6 +38,8 @@ final class PlayerViewModel: NSObject, ObservableObject {
             forward()
         case .seekPosition(let time):
             playFrom(TimeInterval(time))
+        case .setVolume(let volume):
+            setVolume(volume)
         }
     }
     
@@ -61,11 +63,14 @@ final class PlayerViewModel: NSObject, ObservableObject {
             currentPlaying = url
             print("PlayerViewModel:\(#function): play: \(url.absoluteString)")
             audioPlayer = try await getPlayer(url)
-            await setState(
-                currentTime: audioPlayer?.currentTime ?? 0,
-                duration: audioPlayer?.duration ?? 0,
-                playing: true
-            )
+            if let audioPlayer {
+                await setState(
+                    currentTime: audioPlayer.currentTime,
+                    duration: audioPlayer.duration,
+                    volume: audioPlayer.volume,
+                    playing: true
+                )
+            }
             audioPlayer?.play()
         } catch {
             print("PlayerViewModel:\(#function): error play: \(error.localizedDescription)")
@@ -131,6 +136,12 @@ final class PlayerViewModel: NSObject, ObservableObject {
         updateState()
     }
     
+    // MARK: - Volume
+    private func setVolume(_ volume: Float) {
+        audioPlayer?.volume = volume
+        updateState()
+    }
+    
     // MARK: - Player
     private func getPlayer(_ url: URL) async throws -> AVAudioPlayer {
         print("PlayerViewModel:\(#function)")
@@ -153,16 +164,7 @@ final class PlayerViewModel: NSObject, ObservableObject {
     }
     
     // MARK: - State
-    @MainActor
-    private func setState(_ state: TrackState?) {
-        self.state = state
-        
-        if let isPlaying = state?.isPlaying {
-            self.startOrStopTimer(isPlaying)
-        }
-    }
-    
-    private func setState(currentTime: TimeInterval, duration: TimeInterval, playing: Bool) async {
+    private func setState(currentTime: TimeInterval, duration: TimeInterval, volume: Float, playing: Bool) async {
         guard let track else {
             return
         }
@@ -174,6 +176,7 @@ final class PlayerViewModel: NSObject, ObservableObject {
             duration: duration,
             artistName: track.artistName,
             image: track.image,
+            volume: volume,
             isPlaying: playing
         )
         
@@ -181,15 +184,25 @@ final class PlayerViewModel: NSObject, ObservableObject {
     }
     
     private func updateState() {
-        guard state != nil else { return }
-        
+        guard state != nil, audioPlayer != nil else { return }
+
         Task { [weak self] in
             let newState  = self?.state?.copy(
-                currentTime: self?.audioPlayer?.currentTime ?? 0,
-                isPlaying: self?.audioPlayer?.isPlaying ?? false
+                currentTime: self?.audioPlayer?.currentTime,
+                volume: self?.audioPlayer?.volume,
+                isPlaying: self?.audioPlayer?.isPlaying
             )
             
             await self?.setState(newState)
+        }
+    }
+    
+    @MainActor
+    private func setState(_ state: TrackState?) {
+        self.state = state
+        
+        if let isPlaying = state?.isPlaying {
+            self.startOrStopTimer(isPlaying)
         }
     }
     
