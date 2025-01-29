@@ -10,6 +10,7 @@ import SwiftUI
 struct PlayerView: View {
     let state: TrackState?
     let action: (PlayerAction) -> Void
+    @State private var infoTrackVisible = false
     
     var body: some View {
         GeometryReader {
@@ -23,7 +24,6 @@ struct PlayerView: View {
             // Sizing it for more compact look
             VStack(spacing: spacing) {
                 VStack(spacing: spacing) {
-                    HStack(alignment: .center, spacing: 15) {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(state?.name ?? "")
                                 .font(.title3)
@@ -33,20 +33,6 @@ struct PlayerView: View {
                                 .foregroundStyle(.gray)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        
-                        Button {
-                            
-                        } label: {
-                            Image(systemName: "ellipsis")
-                                .foregroundStyle(.white)
-                                .padding(12)
-                                .background {
-                                    Circle()
-                                        .fill(.ultraThinMaterial)
-                                        .environment(\.colorScheme, .light)
-                                }
-                        }
-                    }
                     
                     // Timing Indicator
                     if let state {
@@ -108,14 +94,14 @@ struct PlayerView: View {
                     Button {
                         action(.pauseOrPlay)
                     } label: {
-                        ZStack {
-                            Circle()
-                                .fill(.white.opacity(0.3))
-                                .frame(width: playButtonEdgeSize, height: playButtonEdgeSize)
-                            Image(systemName: state?.isPlaying == true ? "pause.circle" : "play.circle")
-                            // Dynamic Sizing for Smaller to Large iPhone
-                                .font(.system(size: playButtonSize))
-                        }
+                        Image(systemName: state?.isPlaying == true ? "pause.circle" : "play.circle")
+                        // Dynamic Sizing for Smaller to Large iPhone
+                            .font(.system(size: playButtonSize))
+                            .background {
+                                Circle()
+                                    .fill(.white.opacity(0.3))
+                                    .frame(width: playButtonEdgeSize, height: playButtonEdgeSize)
+                            }
                     }
                     
                     Button {
@@ -169,9 +155,9 @@ struct PlayerView: View {
                                 .frame(height: 5)
                                 .foregroundStyle(Color.white)
                             Image(systemName: "speaker.slash")
-                            .font(.title3)
-                            .frame(width: 24, alignment: .leading)
-                            .foregroundStyle(.gray)
+                                .font(.title3)
+                                .frame(width: 24, alignment: .leading)
+                                .foregroundStyle(.gray)
                         }
                         
                     }
@@ -196,7 +182,12 @@ struct PlayerView: View {
                         }
                         
                         Button {
-                            
+                            if state != nil {
+                                withAnimation {
+                                    infoTrackVisible = true
+                                }
+                            }
+
                         } label: {
                             Image(systemName: "list.bullet")
                                 .font(.title2)
@@ -212,5 +203,6 @@ struct PlayerView: View {
             }
         }
         .compositingGroup() // Важно для корректного наложения
+        .alertInfoTrack(isPresented: $infoTrackVisible, track: state)
     }
 }
