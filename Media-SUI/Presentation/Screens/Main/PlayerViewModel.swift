@@ -172,10 +172,13 @@ final class PlayerViewModel: NSObject, ObservableObject {
         let newState = TrackState(
             id: track.id,
             name: track.name,
-            currentTime: currentTime,
-            duration: duration,
+            albumName: track.albumName,
             artistName: track.artistName,
+            position: track.position,
+            releasedate: track.releasedate,
             image: track.image,
+            duration: duration,
+            currentTime: currentTime,
             volume: volume,
             isPlaying: playing
         )

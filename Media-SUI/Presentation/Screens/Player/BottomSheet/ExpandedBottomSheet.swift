@@ -124,10 +124,13 @@ extension View {
         state: TrackState(
             id: track.id,
             name: track.name,
-            currentTime: 50,
-            duration: TimeInterval(track.duration),
+            albumName: track.albumName,
             artistName: track.artistName,
+            position: track.position,
+            releasedate: track.releasedate,
             image: track.image,
+            duration: TimeInterval(track.duration),
+            currentTime: 50,
             volume: 0.5,
             isPlaying: true
         ),

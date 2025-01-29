@@ -1,6 +1,38 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Album: %@" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Альбом: %@"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Альбом: %@"
+          }
+        }
+      }
+    },
+    "Artist: %@" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Исполнитель: %@"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Виконавець: %@"
+          }
+        }
+      }
+    },
     "Audio recorder" : {
       "localizations" : {
         "ru" : {
@@ -29,6 +61,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Скасувати"
+          }
+        }
+      }
+    },
+    "Date: %@" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дата: %@"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дата: %@"
           }
         }
       }
@@ -277,6 +325,22 @@
         }
       }
     },
+    "Position: %lld" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Позиция: %lld"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Позиція: %lld"
+          }
+        }
+      }
+    },
     "Record" : {
       "localizations" : {
         "ru" : {
@@ -385,6 +449,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Відповідь недійсна, код"
+          }
+        }
+      }
+    },
+    "Track: %@" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Трек: %@"
+          }
+        },
+        "uk" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Трек: %@"
           }
         }
       }

@@ -14,7 +14,6 @@ final class MusicListViewModel: ObservableObject {
     @Published var isRenameVisible = false
     @Published var name = ""
     @Published private(set) var currentTrack: Track?
-    
 
     private var task: Task<(), Never>?
     private var maxIndex = 0
