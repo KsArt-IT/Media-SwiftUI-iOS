@@ -8,10 +8,11 @@
 import SwiftUI
 
 struct ExpandedBottomSheet: View {
-    @Binding var expand: Bool
-    var animation: Namespace.ID
     @State private var animateContent: Bool = false
     @State private var offsetY: CGFloat = 0
+    
+    @Binding var expand: Bool
+    var animation: Namespace.ID
     let state: TrackState?
     let action: (PlayerAction) -> Void
     
@@ -19,23 +20,25 @@ struct ExpandedBottomSheet: View {
         GeometryReader {
             let size = $0.size
             let safeArea = $0.safeAreaInsets
+            let cornerRadius = max(5, (1.0 - (offsetY / (size.height * 0.5))) * deviceCornerRadius)
+            let cornerSize = CGSizeMake(cornerRadius, cornerRadius)
             
             ZStack {
                 // Marking it as Rounded Rectangle with Device Corner Radius
-                RoundedRectangle(cornerSize: animateContent ? deviceCornerRadius : CGSizeZero, style: .continuous)
+                RoundedRectangle(cornerSize: animateContent ? cornerSize : CGSizeZero, style: .continuous)
                     .fill(.ultraThickMaterial)
                     .overlay {
-                        RoundedRectangle(cornerSize: animateContent ? deviceCornerRadius : CGSizeZero, style: .continuous)
+                        RoundedRectangle(cornerSize: animateContent ? cornerSize : CGSizeZero, style: .continuous)
                             .fill(.yellow)
                             .blur(radius: 125)
                             .opacity(animateContent ? 1 : 0)
                     }
-//                    .overlay(alignment: .top) {
-//                        MusicInfoView(expandSheet: $expand, animation: animation, state: state, action: action)
-//                        // Disabling Interaction (Since it`s not Necessary Here)
-//                            .allowsHitTesting(false)
-//                            .opacity(animateContent ? 0 : 1)
-//                    }
+                //                    .overlay(alignment: .top) {
+                //                        MusicInfoView(expandSheet: $expand, animation: animation, state: state, action: action)
+                //                        // Disabling Interaction (Since it`s not Necessary Here)
+                //                            .allowsHitTesting(false)
+                //                            .opacity(animateContent ? 0 : 1)
+                //                    }
                     .matchedGeometryEffect(id: Constants.bgGeometryEffectId, in: animation)
                 
                 VStack(spacing: 15) {
@@ -45,7 +48,7 @@ struct ExpandedBottomSheet: View {
                         .opacity(animateContent ? 1 : 0)
                     // Mathing with Slide Animation
                         .offset(y: animateContent ? 0 : size.height)
-
+                    
                     // Artwork Hero View
                     GeometryReader {
                         let size = $0.size
@@ -55,7 +58,7 @@ struct ExpandedBottomSheet: View {
                             .frame(width: imageSize, height: imageSize)
                             .clipShape(
                                 RoundedRectangle(
-                                    cornerSize: animateContent ? Constants.cornerSizeMedium : Constants.cornerSizeSmall,
+                                    cornerSize: animateContent ? cornerSize : Constants.cornerSizeSmall,
                                     style: .continuous
                                 )
                             )
@@ -68,7 +71,7 @@ struct ExpandedBottomSheet: View {
                 }
                 .padding(.top, safeArea.top + (safeArea.bottom == 0 ? 10 : 0))
                 .padding(.bottom, safeArea.bottom == 0 ? 10 : safeArea.bottom)
-                .padding(.horizontal, 25)
+                .padding(.horizontal)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                 .clipped()
             }
@@ -79,10 +82,16 @@ struct ExpandedBottomSheet: View {
                     .onChanged { value in
                         let translationY = value.translation.height
                         offsetY = (translationY > 0 ? translationY : 0)
+                        if expand, offsetY > size.height * 0.85 {
+                            withAnimation(.easeInOut(duration: 0.35)) {
+                                expand = false
+                                animateContent = false
+                            }
+                        }
                     }
                     .onEnded { value in
-                        withAnimation(.easeInOut(duration: 0.35)) {
-                            if offsetY > size.height * 0.15 {
+                        withAnimation(.easeInOut(duration: 0.5)) {
+                            if offsetY > size.height * 0.12 {
                                 expand = false
                                 animateContent = false
                             } else {
@@ -100,18 +109,6 @@ struct ExpandedBottomSheet: View {
         }
     }
     
-}
-
-extension View {
-    var deviceCornerRadius: CGSize {
-        let key = "_displayCornerRadius"
-        return if let screen = (UIApplication.shared.connectedScenes.first as? UIWindowScene)?.windows.first?.screen,
-                  let cornerRadius = screen.value(forKey: key) as? CGFloat {
-            CGSizeMake(cornerRadius, cornerRadius)
-        } else {
-            CGSizeZero
-        }
-    }
 }
 
 #Preview {
