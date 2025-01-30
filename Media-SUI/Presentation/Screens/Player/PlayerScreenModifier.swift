@@ -16,14 +16,22 @@ struct PlayerScreenModifier: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-        // отображение плеера в свернутом виде
             .safeAreaInset(edge: .bottom) {
-                CustomBottomSheet(
-                    expand: $expand,
-                    animation: animation,
-                    state: state,
-                    action: action
-                )
+                if !expand {
+                    // отображение плеера в свернутом виде
+                    CustomBottomSheet(
+                        expand: expand,
+                        animation: animation,
+                        state: state,
+                        action: action
+                    )
+                    .onTapGesture {
+                        // Expanding Bottom Sheet
+                        withAnimation(.easeInOut(duration: 0.5)) {
+                            expand = true
+                        }
+                    }
+                }
             }
             .overlay {
                 if expand {
