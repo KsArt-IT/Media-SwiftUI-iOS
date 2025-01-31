@@ -169,9 +169,7 @@ final class PlayerViewModel: NSObject, ObservableObject {
     
     // MARK: - State
     private func setState(currentTime: TimeInterval, duration: TimeInterval, volume: Float, playing: Bool) async {
-        guard let track else {
-            return
-        }
+        guard let track else { return }
         
         let newState = TrackState(
             id: track.id,

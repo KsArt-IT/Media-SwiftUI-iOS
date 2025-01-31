@@ -24,15 +24,15 @@ struct PlayerView: View {
             // Sizing it for more compact look
             VStack(spacing: spacing) {
                 VStack(spacing: spacing) {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(state?.name ?? "")
-                                .font(.title3)
-                                .fontWeight(.semibold)
-                            
-                            Text(state?.artistName ?? "")
-                                .foregroundStyle(.gray)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(state?.name ?? "")
+                            .font(.title3)
+                            .fontWeight(.semibold)
+                        
+                        Text(state?.artistName ?? "")
+                            .foregroundStyle(.gray)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     
                     // Timing Indicator
                     if let state {
@@ -81,9 +81,7 @@ struct PlayerView: View {
                     }
                     
                     Button {
-                        withAnimation(.bouncy) {
-                            action(.backward())
-                        }
+                        action(.backward())
                     } label: {
                         Image(systemName: "backward.fill")
                         // Dynamic Sizing for Smaller to Large iPhone
@@ -105,9 +103,7 @@ struct PlayerView: View {
                     }
                     
                     Button {
-                        withAnimation(.bouncy) {
-                            action(.forward())
-                        }
+                        action(.forward())
                     } label: {
                         Image(systemName: "forward.fill")
                         // Dynamic Sizing for Smaller to Large iPhone
@@ -187,7 +183,7 @@ struct PlayerView: View {
                                     infoTrackVisible = true
                                 }
                             }
-
+                            
                         } label: {
                             Image(systemName: "list.bullet")
                                 .font(.title2)
