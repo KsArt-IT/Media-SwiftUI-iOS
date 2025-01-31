@@ -15,6 +15,7 @@ final class PlayerViewModel: NSObject, ObservableObject {
     private var track: Track?
     private var audioPlayer: AVAudioPlayer?
     private var currentPlaying: URL?
+    private var volume: Float = 1.0
     private var timer: Timer?
     
     // MARK: - Player Commands
@@ -138,6 +139,8 @@ final class PlayerViewModel: NSObject, ObservableObject {
     
     // MARK: - Volume
     private func setVolume(_ volume: Float) {
+        print("PlayerViewModel:\(#function)")
+        self.volume = volume
         audioPlayer?.volume = volume
         updateState()
     }
@@ -153,6 +156,7 @@ final class PlayerViewModel: NSObject, ObservableObject {
         player.delegate = self
         // подготовить
         player.prepareToPlay()
+        player.volume = self.volume
         return player
     }
     
@@ -193,7 +197,7 @@ final class PlayerViewModel: NSObject, ObservableObject {
         Task { [weak self] in
             let newState  = self?.state?.copy(
                 currentTime: self?.audioPlayer?.currentTime ?? 0,
-                volume: self?.audioPlayer?.volume,
+                volume: self?.audioPlayer?.volume ?? self?.volume,
                 isPlaying: self?.audioPlayer?.isPlaying ?? false
             )
             
