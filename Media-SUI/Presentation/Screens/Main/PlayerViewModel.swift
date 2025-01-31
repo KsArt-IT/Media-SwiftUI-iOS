@@ -187,13 +187,14 @@ final class PlayerViewModel: NSObject, ObservableObject {
     }
     
     private func updateState() {
-        guard state != nil, audioPlayer != nil else { return }
+        guard state != nil else { return }
 
+        print("PlayerViewModel:\(#function)")
         Task { [weak self] in
             let newState  = self?.state?.copy(
-                currentTime: self?.audioPlayer?.currentTime,
+                currentTime: self?.audioPlayer?.currentTime ?? 0,
                 volume: self?.audioPlayer?.volume,
-                isPlaying: self?.audioPlayer?.isPlaying
+                isPlaying: self?.audioPlayer?.isPlaying ?? false
             )
             
             await self?.setState(newState)
