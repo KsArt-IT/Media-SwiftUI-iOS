@@ -17,4 +17,4 @@ Media Player app
 - [SwiftUI](https://developer.apple.com/xcode/swiftui/) for UI
 
 ## License
-MIT license. See the [LICENSE](https://github.com/KsArt-IT/News-SwiftUI-iOS?tab=MIT-1-ov-file) file for details.
+MIT license. See the [LICENSE](https://github.com/KsArt-IT/Media-SwiftUI-iOS?tab=MIT-1-ov-file) file for details.
